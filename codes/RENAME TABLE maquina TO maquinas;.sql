@@ -1,1 +1,1 @@
-RENAME TABLE maquina TO maquinas;
+DROP DATABASE lista_maquinas.db
