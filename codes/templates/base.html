@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Line Capability Tool</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+  <style>
+    /* Remove scroll da página inteira — o scroll fica só nos painéis */
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #f0f2f5;
+    }
+
+    /* ── BARRA SUPERIOR ───────────────────────── */
+    #topbar {
+      height: 48px;
+      background: #111827;
+      border-bottom: 2px solid #1e3a5f;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── SIDEBAR ──────────────────────────────── */
+    #sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: #ffffff;
+      border-right: 2px solid #dee2e6;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 4px;
+    }
+
+    /* Card de cada máquina no sidebar */
+    .maquina-card {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      transition: background .15s, border-color .15s;
+    }
+    .maquina-card:hover {
+      background: #e8f0fe;
+    }
+    .maquina-card.selecionado {
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+
+    /* Placeholder do ícone — trocar por <img> depois */
+    .maquina-icon-placeholder {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      background: #16a34a;   /* verde, como no Power Apps */
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* Tag da máquina */
+    .maquina-tag {
+      font-size: .8rem;
+      font-weight: 700;
+      color: #dc2626;         /* vermelho, como no Power Apps */
+      text-align: left;
+      word-break: break-word;
+    }
+
+    /* ── PAINEL DIREITO ───────────────────────── */
+    #painel-direito {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 28px;
+      background: #f8f9fa;
+      border-left: 3px solid #6d28d9;  /* roxo, como no Power Apps */
+    }
+
+    /* Cabeçalho do painel direito */
+    #painel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 12px;
+      flex: 1;
+    }
+
+    /* Indicador de modo */
+    #modo-label {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: .85rem;
+      letter-spacing: 1.5px;
+    }
+
+    /* ── TABELAS DE DETALHES ──────────────────── */
+    .table-detalhes th {
+      width: 38%;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: .85rem;
+    }
+    .table-detalhes td {
+      font-size: .85rem;
+    }
+
+    .secao-titulo {
+      border-left: 4px solid #2563eb;
+      padding-left: 10px;
+      margin: 1.2rem 0 .6rem;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #1e293b;
+    }
+
+    /* ── BOTÕES DE MODO ───────────────────────── */
+    .modo-btn.active {
+      opacity: 1 !important;
+    }
+    .modo-btn {
+      opacity: .6;
+      font-size: .8rem;
+    }
+  </style>
+</head>
+<body>
+
+{% block content %}{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

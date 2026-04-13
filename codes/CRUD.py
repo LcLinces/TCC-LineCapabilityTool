@@ -40,13 +40,35 @@ def create(dados):
         """, (dados['tag_maquina'], dados.get('peso_maquina'), dados.get('comp_maquina'), 
               dados.get('larg_maquina'), dados.get('alt_maquina')))
 
+        posicao = dados.get('posicao')
+        nome_linha = dados.get('linha')
+
+        # Se o usuário NÃO digitou posição, mas digitou uma linha
+        if not posicao and nome_linha:
+            # Busca o valor máximo da posição naquela linha específica
+            resultado = cursor.execute(
+                "SELECT MAX(posicao) FROM linha WHERE linha = ?", 
+                (nome_linha,)
+            ).fetchone()
+            
+            max_pos = resultado[0] # Pega o valor do MAX
+            
+            if max_pos is not None:
+                posicao = max_pos + 1
+            else:
+                posicao = 1 # Se a linha for nova/vazia, começa em 1
+
+        # Agora sim, fazemos o INSERT usando a posição calculada acima!
         cursor.execute("""
             INSERT INTO linha (tag_maquina, linha, posicao)
             VALUES (?, ?, ?)
-        """, (dados['tag_maquina'], dados.get('linha'), dados.get('posicao')))
+        """, (dados['tag_maquina'], nome_linha, posicao))
+        # ==============================================================
 
         conn.commit() # Confirma tudo se nada deu errado
-        return True, "Máquina cadastrada com sucesso."
+        
+        # Retorna a mensagem já dizendo em qual posição a máquina ficou
+        return True, f"Máquina cadastrada com sucesso na posição {posicao}."
 
     except sqlite3.IntegrityError as e:
         conn.rollback() # Desfaz TUDO se der erro (ex: Tag já existe)
@@ -54,5 +76,57 @@ def create(dados):
     except Exception as e:
         conn.rollback()
         return False, f"Erro inesperado: {e}"
+    finally:
+        conn.close()
+
+#____________________________________________________________________________________________
+# ==========================================
+# READ - LEITURA DE DADOS
+# ==========================================
+
+def buscar_todas_maquinas_resumo():
+    """
+    Busca um resumo (Tag, Nome, Tipo e Linha) para preencher a tabela inicial do site.
+    Usa LEFT JOIN para mostrar a máquina mesmo que ela ainda não esteja em nenhuma linha.
+    """
+    conn = get_conn()
+    try:
+        query = """
+            SELECT m.tag_maquina, m.nome_maquina, m.tipo, l.linha, l.posicao
+            FROM maquinas m
+            LEFT JOIN linha l ON m.tag_maquina = l.tag_maquina
+            ORDER BY l.linha, l.posicao
+        """
+        resultado = conn.execute(query).fetchall()
+        return [dict(row) for row in resultado] # Converte para lista de dicionários
+    except Exception as e:
+        print(f"Erro ao buscar resumo: {e}")
+        return []
+    finally:
+        conn.close()
+
+def buscar_maquina_completa(tag_maquina):
+    """
+    Faz um LEFT JOIN gigante para buscar ABSOLUTAMENTE TUDO sobre uma máquina.
+    Perfeito para a tela de 'Ver Detalhes' ou para preencher o formulário de 'Editar'.
+    """
+    conn = get_conn()
+    try:
+        query = """
+            SELECT m.*, 
+                   e.max_pcb_peso_kg, e.min_pcb_comp_mm, e.min_pcb_larg_mm, e.max_pcb_comp_mm, e.max_pcb_larg_mm, e.max_height_limit_mm,
+                   d.peso_maquina, d.comp_maquina, d.larg_maquina, d.alt_maquina,
+                   l.linha, l.posicao
+            FROM maquinas m
+            LEFT JOIN espec_maquinas e ON m.tag_maquina = e.tag_maquina
+            LEFT JOIN dim_maquinas d ON m.tag_maquina = d.tag_maquina
+            LEFT JOIN linha l ON m.tag_maquina = l.tag_maquina
+            WHERE m.tag_maquina = ?
+        """
+        resultado = conn.execute(query, (tag_maquina,)).fetchone()
+        return dict(resultado) if resultado else None
+    except Exception as e:
+        print(f"Erro ao buscar detalhes: {e}")
+        return None
     finally:
         conn.close()

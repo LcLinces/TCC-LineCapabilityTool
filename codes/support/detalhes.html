@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}{{ maquina.tag_maquina }} — Detalhes{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
+  <div>
+    <a href="/" class="btn btn-sm btn-outline-secondary mb-2">← Voltar</a>
+    <h4 class="font-weight-bold mb-0">{{ maquina.tag_maquina }}</h4>
+    <p class="text-muted mb-0">{{ maquina.nome_maquina }}</p>
+  </div>
+
+  <!-- Botão para alternar entre Visualizar e Editar -->
+  {% if editando %}
+    <a href="/maquina/{{ maquina.tag_maquina }}"
+       class="btn btn-secondary mt-2">
+      👁 Modo Visualização
+    </a>
+  {% else %}
+    <a href="/maquina/{{ maquina.tag_maquina }}?editar=1"
+       class="btn btn-warning mt-2 font-weight-bold">
+      ✏️ Editar Máquina
+    </a>
+  {% endif %}
+</div>
+
+<hr>
+
+<!-- ===================== -->
+<!-- MODO VISUALIZAÇÃO     -->
+<!-- ===================== -->
+{% if not editando %}
+
+  <!-- Seção 1: Dados Gerais -->
+  <h6 class="secao-titulo">⚙️ Dados Gerais</h6>
+  <table class="table table-bordered table-sm table-detalhes">
+    <tbody>
+      <tr><th>TAG</th>        <td>{{ maquina.tag_maquina }}</td></tr>
+      <tr><th>Serial Nº</th>  <td>{{ maquina.serial_No or '—' }}</td></tr>
+      <tr><th>Nome</th>       <td>{{ maquina.nome_maquina }}</td></tr>
+      <tr><th>Tipo</th>       <td>{{ maquina.tipo or '—' }}</td></tr>
+      <tr><th>Comentário</th> <td>{{ maquina.comentario or '—' }}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Seção 2: Elétrica / Pneumática -->
+  <h6 class="secao-titulo">⚡ Dados Elétricos / Pneumáticos</h6>
+  <table class="table table-bordered table-sm table-detalhes">
+    <tbody>
+      <tr>
+        <th>Tensão (V)</th>
+        <td>{{ maquina.tensao_v or '—' }}</td>
+      </tr>
+      <tr>
+        <th>Frequência (Hz)</th>
+        <td>{{ maquina.frequencia_hz or '—' }}</td>
+      </tr>
+      <tr>
+        <th>Potência</th>
+        <td>
+          {% if maquina.potencia %}
+            {{ maquina.potencia }} {{ maquina.unidade_potencia or '' }}
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Pressão</th>
+        <td>
+          {% if maquina.pressao %}
+            {{ maquina.pressao }} {{ maquina.unidade_pressao or '' }}
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Seção 3: Especificações de PCB -->
+  <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+  <table class="table table-bordered table-sm table-detalhes">
+    <tbody>
+      <tr><th>Peso máx. PCB (kg)</th>    <td>{{ maquina.max_pcb_peso_kg or '—' }}</td></tr>
+      <tr><th>Comp. mín. (mm)</th>       <td>{{ maquina.min_pcb_comp_mm or '—' }}</td></tr>
+      <tr><th>Larg. mín. (mm)</th>       <td>{{ maquina.min_pcb_larg_mm or '—' }}</td></tr>
+      <tr><th>Comp. máx. (mm)</th>       <td>{{ maquina.max_pcb_comp_mm or '—' }}</td></tr>
+      <tr><th>Larg. máx. (mm)</th>       <td>{{ maquina.max_pcb_larg_mm or '—' }}</td></tr>
+      <tr><th>Altura limite (mm)</th>    <td>{{ maquina.max_height_limit_mm or '—' }}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Seção 4: Dimensões Físicas -->
+  <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
+  <table class="table table-bordered table-sm table-detalhes">
+    <tbody>
+      <tr><th>Peso (kg)</th>       <td>{{ maquina.peso_maquina or '—' }}</td></tr>
+      <tr><th>Comprimento (mm)</th><td>{{ maquina.comp_maquina or '—' }}</td></tr>
+      <tr><th>Largura (mm)</th>    <td>{{ maquina.larg_maquina or '—' }}</td></tr>
+      <tr><th>Altura (mm)</th>     <td>{{ maquina.alt_maquina or '—' }}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Seção 5: Localização -->
+  <h6 class="secao-titulo">📍 Localização na Fábrica</h6>
+  <table class="table table-bordered table-sm table-detalhes">
+    <tbody>
+      <tr><th>Linha</th>   <td>{{ maquina.linha or '—' }}</td></tr>
+      <tr><th>Posição</th> <td>{{ maquina.posicao or '—' }}</td></tr>
+    </tbody>
+  </table>
+
+<!-- ===================== -->
+<!-- MODO EDIÇÃO           -->
+<!-- ===================== -->
+{% else %}
+
+  <div class="alert alert-warning">
+    ✏️ <strong>Modo de edição</strong> — formulário será implementado na próxima etapa.
+  </div>
+
+  <!-- Placeholder: o formulário de edição virá aqui -->
+
+{% endif %}
+
+{% endblock %}
