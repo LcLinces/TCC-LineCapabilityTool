@@ -130,3 +130,81 @@ def buscar_maquina_completa(tag_maquina):
         return None
     finally:
         conn.close()
+
+# ==========================================
+# UPDATE - ATUALIZAÇÃO DE DADOS
+# ==========================================
+
+def update(tag_maquina, dados):
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    try:
+        # Atualiza tabela mãe
+        cursor.execute("""
+            UPDATE maquinas
+            SET serial_No = ?, nome_maquina = ?, tipo = ?, tensao_v = ?, frequencia_hz = ?,
+                potencia = ?, unidade_potencia = ?, pressao = ?, unidade_pressao = ?, comentario = ?
+            WHERE tag_maquina = ?
+        """, (dados.get('serial_No'), dados['nome_maquina'], dados['tipo'],
+              dados.get('tensao_v'), dados.get('frequencia_hz'), dados.get('potencia'),
+              dados.get('unidade_potencia'), dados.get('pressao'), dados.get('unidade_pressao'),
+              dados.get('comentario'), tag_maquina))
+
+        # Atualiza especificações de PCB
+        cursor.execute("""
+            UPDATE espec_maquinas
+            SET max_pcb_peso_kg = ?, min_pcb_comp_mm = ?, min_pcb_larg_mm = ?,
+                max_pcb_comp_mm = ?, max_pcb_larg_mm = ?, max_height_limit_mm = ?
+            WHERE tag_maquina = ?
+        """, (dados.get('max_pcb_peso_kg'), dados.get('min_pcb_comp_mm'),
+              dados.get('min_pcb_larg_mm'), dados.get('max_pcb_comp_mm'),
+              dados.get('max_pcb_larg_mm'), dados.get('max_height_limit_mm'),
+              tag_maquina))
+
+        # Atualiza dimensões
+        cursor.execute("""
+            UPDATE dim_maquinas
+            SET peso_maquina = ?, comp_maquina = ?, larg_maquina = ?, alt_maquina = ?
+            WHERE tag_maquina = ?
+        """, (dados.get('peso_maquina'), dados.get('comp_maquina'),
+              dados.get('larg_maquina'), dados.get('alt_maquina'),
+              tag_maquina))
+
+        # Atualiza linha e posição
+        cursor.execute("""
+            UPDATE linha
+            SET linha = ?, posicao = ?
+            WHERE tag_maquina = ?
+        """, (dados.get('linha'), dados.get('posicao'), tag_maquina))
+
+        conn.commit()
+        return True, "Máquina atualizada com sucesso."
+
+    except Exception as e:
+        conn.rollback()
+        return False, f"Erro ao atualizar: {e}"
+    finally:
+        conn.close()
+
+
+# ==========================================
+# DELETE - EXCLUSÃO DE DADOS
+# ==========================================
+
+def delete(tag_maquina):
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    try:
+        # Com PRAGMA foreign_keys = ON, as tabelas filhas
+        # são deletadas automaticamente em cascata
+        cursor.execute("DELETE FROM maquinas WHERE tag_maquina = ?", (tag_maquina,))
+        conn.commit()
+        return True, f"Máquina {tag_maquina} excluída com sucesso."
+
+    except Exception as e:
+        conn.rollback()
+        return False, f"Erro ao excluir: {e}"
+    finally:
+        conn.close()
