@@ -340,36 +340,36 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-    <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label>Peso máx. PCB (kg)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-peso" class="form-control form-control-sm">
+      <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Peso máx. PCB (kg) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-peso" class="form-control form-control-sm">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Comp. mín. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-comp-min" class="form-control form-control-sm">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Larg. mín. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-larg-min" class="form-control form-control-sm">
+        </div>
       </div>
-      <div class="form-group col-md-4">
-        <label>Comp. mín. (mm)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-comp-min" class="form-control form-control-sm">
-      </div>
-      <div class="form-group col-md-4">
-        <label>Larg. mín. (mm)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-larg-min" class="form-control form-control-sm">
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label>Comp. máx. (mm)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-comp-max" class="form-control form-control-sm">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Comp. máx. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-comp-max" class="form-control form-control-sm">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Larg. máx. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-larg-max" class="form-control form-control-sm">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Altura limite (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="f-pcb-altura" class="form-control form-control-sm">
+        </div>
       </div>
-      <div class="form-group col-md-4">
-        <label>Larg. máx. (mm)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-larg-max" class="form-control form-control-sm">
-      </div>
-      <div class="form-group col-md-4">
-        <label>Altura limite (mm)<span class="text-danger">*</span></label>
-        <input type="number" id="f-pcb-altura" class="form-control form-control-sm">
-      </div>
-    </div>
 
       <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
       <div class="form-row">
@@ -404,32 +404,432 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-    <hr>
+      <hr>
+      <div id="form-feedback" class="mb-3"></div>
 
-    <div id="form-feedback" class="mb-3"></div>
+      <button id="btn-salvar" class="btn btn-success btn-block font-weight-bold">
+        💾 Cadastrar Máquina
+      </button>
+    `;
 
-    <button id="btn-salvar" class="btn btn-success btn-block font-weight-bold">
-      Cadastrar Máquina
-    </button>
-  `;
-    // Liga o botão de salvar
-  document.getElementById('btn-salvar')
-    .addEventListener('click', salvarNovaMaquina);
-  return;
+    document.getElementById('btn-salvar')
+      .addEventListener('click', salvarNovaMaquina);
+    return;
   }
 
-  
-  // ── MODOS: EDIT / DELETE ──────────────────
-  const mensagens = {
-    edit:   '✏️ Formulário de edição — implementar na próxima etapa.',
-    delete: '🗑️ Confirmação de exclusão — implementar na próxima etapa.'
-  };
-  painel.innerHTML = `
-    <div class="alert alert-secondary mt-4">
-      ${mensagens[modoAtual] || ''}
-    </div>
-  `;
+  // ── MODO: EDIT ────────────────────────────
+  if (modoAtual === 'edit') {
+    painel.innerHTML = `
+      <h5 class="font-weight-bold text-dark mb-3">✏️ Editando: ${maquina.tag_maquina}</h5>
+      <hr>
+
+      <h6 class="secao-titulo">⚙️ Dados Gerais</h6>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>TAG</label>
+          <input type="text" class="form-control form-control-sm"
+                 value="${maquina.tag_maquina}" disabled>
+          <small class="text-muted">A TAG não pode ser alterada.</small>
+        </div>
+        <div class="form-group col-md-4">
+          <label>Serial Nº</label>
+          <input type="text" id="e-serial" class="form-control form-control-sm"
+                 value="${maquina.serial_No || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Tipo <span class="text-danger">*</span></label>
+          <input type="text" id="e-tipo" class="form-control form-control-sm"
+                 value="${maquina.tipo || ''}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label>Nome da Máquina <span class="text-danger">*</span></label>
+          <input type="text" id="e-nome" class="form-control form-control-sm"
+                 value="${maquina.nome_maquina || ''}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Comentário</label>
+        <textarea id="e-comentario" class="form-control form-control-sm"
+                  rows="2">${maquina.comentario || ''}</textarea>
+      </div>
+
+      <h6 class="secao-titulo">⚡ Elétrico / Pneumático</h6>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Tensão (V)</label>
+          <input type="number" id="e-tensao" class="form-control form-control-sm"
+                 value="${maquina.tensao_v || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Frequência (Hz)</label>
+          <input type="number" id="e-frequencia" class="form-control form-control-sm"
+                 value="${maquina.frequencia_hz || ''}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Potência</label>
+          <input type="number" id="e-potencia" class="form-control form-control-sm"
+                 value="${maquina.potencia || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Unidade Potência</label>
+          <select id="e-unidade-potencia" class="form-control form-control-sm">
+            <option value="">—</option>
+            <option value="W"  ${maquina.unidade_potencia === 'W'  ? 'selected' : ''}>W</option>
+            <option value="kW" ${maquina.unidade_potencia === 'kW' ? 'selected' : ''}>kW</option>
+            <option value="CV" ${maquina.unidade_potencia === 'CV' ? 'selected' : ''}>CV</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Pressão</label>
+          <input type="number" id="e-pressao" class="form-control form-control-sm"
+                 value="${maquina.pressao || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Unidade Pressão</label>
+          <select id="e-unidade-pressao" class="form-control form-control-sm">
+            <option value="">—</option>
+            <option value="bar" ${maquina.unidade_pressao === 'bar' ? 'selected' : ''}>bar</option>
+            <option value="kPa" ${maquina.unidade_pressao === 'kPa' ? 'selected' : ''}>kPa</option>
+            <option value="psi" ${maquina.unidade_pressao === 'psi' ? 'selected' : ''}>psi</option>
+          </select>
+        </div>
+      </div>
+
+      <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Peso máx. PCB (kg) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-peso" class="form-control form-control-sm"
+                 value="${maquina.max_pcb_peso_kg || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Comp. mín. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-comp-min" class="form-control form-control-sm"
+                 value="${maquina.min_pcb_comp_mm || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Larg. mín. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-larg-min" class="form-control form-control-sm"
+                 value="${maquina.min_pcb_larg_mm || ''}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Comp. máx. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-comp-max" class="form-control form-control-sm"
+                 value="${maquina.max_pcb_comp_mm || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Larg. máx. (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-larg-max" class="form-control form-control-sm"
+                 value="${maquina.max_pcb_larg_mm || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Altura limite (mm) <span class="text-danger">*</span></label>
+          <input type="number" id="e-pcb-altura" class="form-control form-control-sm"
+                 value="${maquina.max_height_limit_mm || ''}">
+        </div>
+      </div>
+
+      <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label>Peso (kg)</label>
+          <input type="number" id="e-peso" class="form-control form-control-sm"
+                 value="${maquina.peso_maquina || ''}">
+        </div>
+        <div class="form-group col-md-3">
+          <label>Comprimento (mm)</label>
+          <input type="number" id="e-comp" class="form-control form-control-sm"
+                 value="${maquina.comp_maquina || ''}">
+        </div>
+        <div class="form-group col-md-3">
+          <label>Largura (mm)</label>
+          <input type="number" id="e-larg" class="form-control form-control-sm"
+                 value="${maquina.larg_maquina || ''}">
+        </div>
+        <div class="form-group col-md-3">
+          <label>Altura (mm)</label>
+          <input type="number" id="e-alt" class="form-control form-control-sm"
+                 value="${maquina.alt_maquina || ''}">
+        </div>
+      </div>
+
+      <h6 class="secao-titulo">📍 Localização</h6>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label>Linha</label>
+          <input type="number" id="e-linha" class="form-control form-control-sm"
+                 value="${maquina.linha || ''}">
+        </div>
+        <div class="form-group col-md-4">
+          <label>Posição</label>
+          <input type="number" id="e-posicao" class="form-control form-control-sm"
+                 value="${maquina.posicao || ''}">
+        </div>
+      </div>
+
+      <hr>
+      <div id="form-feedback" class="mb-3"></div>
+
+      <button id="btn-salvar-edicao" class="btn btn-warning btn-block font-weight-bold">
+        💾 Salvar Alterações
+      </button>
+    `;
+
+    document.getElementById('btn-salvar-edicao')
+      .addEventListener('click', () => salvarEdicao(maquina.tag_maquina));
+    return;
+  }
+
+  // ── MODO: DELETE ──────────────────────────
+  if (modoAtual === 'delete') {
+    painel.innerHTML = `
+      <div class="text-center mt-5">
+        <h5 class="font-weight-bold text-danger mb-1">🗑️ Excluir Máquina</h5>
+        <p class="text-muted mb-4">Esta ação não pode ser desfeita.</p>
+
+        <div class="card border-danger mx-auto" style="max-width: 400px;">
+          <div class="card-body">
+            <p class="mb-1"><strong>TAG:</strong> ${maquina.tag_maquina}</p>
+            <p class="mb-3"><strong>Nome:</strong> ${maquina.nome_maquina || '—'}</p>
+            <hr>
+            <p class="text-danger font-weight-bold">
+              Tem certeza que deseja excluir esta máquina?
+            </p>
+
+            <div id="form-feedback" class="mb-3"></div>
+
+            <div class="d-flex justify-content-center" style="gap: 12px;">
+              <button id="btn-cancelar-delete" class="btn btn-secondary font-weight-bold">
+                ✖ Cancelar
+              </button>
+              <button id="btn-confirmar-delete" class="btn btn-danger font-weight-bold">
+                🗑️ Confirmar Exclusão
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-cancelar-delete')
+      .addEventListener('click', () => {
+        modoAtual = 'view';
+        document.getElementById('modo-label').textContent = 'MODE: VIEW';
+        document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-modo="view"]').classList.add('active');
+        selecionarMaquina(maquina.tag_maquina);
+      });
+
+    document.getElementById('btn-confirmar-delete')
+      .addEventListener('click', () => confirmarDelete(maquina.tag_maquina));
+    return;
+  }
 }
+
+
+// ──────────────────────────────────────────────
+// SALVAR NOVA MÁQUINA
+// ──────────────────────────────────────────────
+async function salvarNovaMaquina() {
+  const feedback = document.getElementById('form-feedback');
+
+  const dados = {
+    tag_maquina:         document.getElementById('f-tag').value.trim(),
+    serial_No:           document.getElementById('f-serial').value.trim()    || null,
+    nome_maquina:        document.getElementById('f-nome').value.trim(),
+    tipo:                document.getElementById('f-tipo').value.trim(),
+    tensao_v:            document.getElementById('f-tensao').value            || null,
+    frequencia_hz:       document.getElementById('f-frequencia').value        || null,
+    potencia:            document.getElementById('f-potencia').value          || null,
+    unidade_potencia:    document.getElementById('f-unidade-potencia').value  || null,
+    pressao:             document.getElementById('f-pressao').value           || null,
+    unidade_pressao:     document.getElementById('f-unidade-pressao').value   || null,
+    comentario:          document.getElementById('f-comentario').value.trim() || null,
+    max_pcb_peso_kg:     document.getElementById('f-pcb-peso').value          || null,
+    min_pcb_comp_mm:     document.getElementById('f-pcb-comp-min').value      || null,
+    min_pcb_larg_mm:     document.getElementById('f-pcb-larg-min').value      || null,
+    max_pcb_comp_mm:     document.getElementById('f-pcb-comp-max').value      || null,
+    max_pcb_larg_mm:     document.getElementById('f-pcb-larg-max').value      || null,
+    max_height_limit_mm: document.getElementById('f-pcb-altura').value        || null,
+    peso_maquina:        document.getElementById('f-peso').value              || null,
+    comp_maquina:        document.getElementById('f-comp').value              || null,
+    larg_maquina:        document.getElementById('f-larg').value              || null,
+    alt_maquina:         document.getElementById('f-alt').value               || null,
+    linha:               document.getElementById('f-linha').value             || null,
+    posicao:             document.getElementById('f-posicao').value           || null,
+  };
+
+  if (!dados.tag_maquina || !dados.nome_maquina || !dados.tipo ||
+      !dados.max_pcb_peso_kg || !dados.min_pcb_comp_mm || !dados.min_pcb_larg_mm ||
+      !dados.max_pcb_comp_mm || !dados.max_pcb_larg_mm || !dados.max_height_limit_mm) {
+    feedback.innerHTML = `
+      <div class="alert alert-danger py-2">
+        ⚠️ Preencha todos os campos obrigatórios:
+        <strong>TAG, Nome, Tipo e todas as Especificações de PCB</strong>.
+      </div>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch('/api/maquina/nova', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(dados)
+    });
+    const resultado = await resp.json();
+
+    if (resultado.sucesso) {
+      modoAtual = 'view';
+      document.getElementById('modo-label').textContent = 'MODE: VIEW';
+      document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-modo="view"]').classList.add('active');
+
+      await carregarMaquinas();
+      await selecionarMaquina(dados.tag_maquina); // ← abre a máquina recém criada
+
+      const aviso = document.createElement('div');
+      aviso.className = 'alert alert-success py-2 mx-3 mt-2';
+      aviso.textContent = `✅ ${resultado.mensagem}`;
+      document.getElementById('painel-direito').prepend(aviso);
+      setTimeout(() => aviso.remove(), 3000);
+
+    } else {
+      feedback.innerHTML = `
+        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+    }
+  } catch (e) {
+    feedback.innerHTML = `
+      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+  }
+}
+
+
+// ──────────────────────────────────────────────
+// SALVAR EDIÇÃO
+// ──────────────────────────────────────────────
+async function salvarEdicao(tag) {
+  const feedback = document.getElementById('form-feedback');
+
+  const dados = {
+    serial_No:           document.getElementById('e-serial').value.trim()       || null,
+    nome_maquina:        document.getElementById('e-nome').value.trim(),
+    tipo:                document.getElementById('e-tipo').value.trim(),
+    tensao_v:            document.getElementById('e-tensao').value               || null,
+    frequencia_hz:       document.getElementById('e-frequencia').value           || null,
+    potencia:            document.getElementById('e-potencia').value             || null,
+    unidade_potencia:    document.getElementById('e-unidade-potencia').value     || null,
+    pressao:             document.getElementById('e-pressao').value              || null,
+    unidade_pressao:     document.getElementById('e-unidade-pressao').value      || null,
+    comentario:          document.getElementById('e-comentario').value.trim()    || null,
+    max_pcb_peso_kg:     document.getElementById('e-pcb-peso').value             || null,
+    min_pcb_comp_mm:     document.getElementById('e-pcb-comp-min').value         || null,
+    min_pcb_larg_mm:     document.getElementById('e-pcb-larg-min').value         || null,
+    max_pcb_comp_mm:     document.getElementById('e-pcb-comp-max').value         || null,
+    max_pcb_larg_mm:     document.getElementById('e-pcb-larg-max').value         || null,
+    max_height_limit_mm: document.getElementById('e-pcb-altura').value           || null,
+    peso_maquina:        document.getElementById('e-peso').value                 || null,
+    comp_maquina:        document.getElementById('e-comp').value                 || null,
+    larg_maquina:        document.getElementById('e-larg').value                 || null,
+    alt_maquina:         document.getElementById('e-alt').value                  || null,
+    linha:               document.getElementById('e-linha').value                || null,
+    posicao:             document.getElementById('e-posicao').value              || null,
+  };
+
+  if (!dados.nome_maquina || !dados.tipo ||
+      !dados.max_pcb_peso_kg || !dados.min_pcb_comp_mm || !dados.min_pcb_larg_mm ||
+      !dados.max_pcb_comp_mm || !dados.max_pcb_larg_mm || !dados.max_height_limit_mm) {
+    feedback.innerHTML = `
+      <div class="alert alert-danger py-2">
+        ⚠️ Preencha todos os campos obrigatórios:
+        <strong>Nome, Tipo e todas as Especificações de PCB</strong>.
+      </div>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/maquina/${tag}/editar`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(dados)
+    });
+    const resultado = await resp.json();
+
+    if (resultado.sucesso) {
+      modoAtual = 'view';
+      document.getElementById('modo-label').textContent = 'MODE: VIEW';
+      document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-modo="view"]').classList.add('active');
+
+      await carregarMaquinas();
+      await selecionarMaquina(tag); // ← re-renderiza o painel em VIEW com dados atualizados
+
+      const aviso = document.createElement('div');
+      aviso.className = 'alert alert-success py-2 mx-3 mt-2';
+      aviso.textContent = `✅ ${resultado.mensagem}`;
+      document.getElementById('painel-direito').prepend(aviso);
+      setTimeout(() => aviso.remove(), 3000);
+
+    } else {
+      feedback.innerHTML = `
+        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+    }
+  } catch (e) {
+    feedback.innerHTML = `
+      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+  }
+}
+
+
+// ──────────────────────────────────────────────
+// CONFIRMAR DELETE
+// ──────────────────────────────────────────────
+async function confirmarDelete(tag) {
+  const feedback = document.getElementById('form-feedback');
+
+  try {
+    const resp = await fetch(`/api/maquina/${tag}/deletar`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const resultado = await resp.json();
+
+    if (resultado.sucesso) {
+      tagSelecionada = null;
+      modoAtual = 'view';
+      document.getElementById('modo-label').textContent = 'MODE: VIEW';
+      document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-modo="view"]').classList.add('active');
+
+      document.getElementById('painel-direito').innerHTML = `
+        <div class="alert alert-success mt-4 text-center">
+          ✅ ${resultado.mensagem}
+        </div>`;
+
+      await carregarMaquinas();
+
+    } else {
+      feedback.innerHTML = `
+        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+    }
+  } catch (e) {
+    feedback.innerHTML = `
+      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+  }
+}
+
 
 // ──────────────────────────────────────────────
 // FILTRAR
@@ -486,24 +886,16 @@ function configurarEventos() {
         .forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // --- A CORREÇÃO ENTRA AQUI ---
+      // Modo NEW: limpa seleção e abre formulário vazio
       if (modoAtual === 'new') {
         tagSelecionada = null;
-        document.querySelectorAll('.maquina-card').forEach(c => c.classList.remove('selecionado'));
-        renderizarPainelDireito({}); // Passa um objeto vazio para não dar erro no JS
-      } 
-      else if (tagSelecionada) {
-        // Se for View, Edit ou Delete, só recarrega se já tiver uma máquina selecionada
-        await selecionarMaquina(tagSelecionada);
-      } 
-      else {
-        // Se mudou de modo e não tem máquina selecionada, mostra aviso
-        document.getElementById('painel-direito').innerHTML = `
-          <p class="text-muted text-center mt-5" style="font-size:.95rem;">
-            ← Selecione uma máquina para ver os detalhes.
-          </p>
-        `;
+        document.querySelectorAll('.maquina-card')
+          .forEach(c => c.classList.remove('selecionado'));
+        renderizarPainelDireito({});
+        return;
       }
+
+      if (tagSelecionada) await selecionarMaquina(tagSelecionada);
     });
   });
 
