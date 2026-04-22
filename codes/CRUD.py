@@ -86,19 +86,32 @@ def create(dados):
 
 def buscar_todas_maquinas_resumo():
     """
-    Busca um resumo (Tag, Nome, Tipo e Linha) para preencher a tabela inicial do site.
-    Usa LEFT JOIN para mostrar a máquina mesmo que ela ainda não esteja em nenhuma linha.
+    Busca os dados principais de todas as máquinas para alimentar o /api/maquinas.
+    Inclui dados gerais (maquinas) + limites de PCB (espec_maquinas) + posicionamento (linha).
+    Usa LEFT JOIN em linha e espec_maquinas para não excluir máquinas com dados incompletos.
     """
     conn = get_conn()
     try:
         query = """
-            SELECT m.tag_maquina, m.nome_maquina, m.tipo, l.linha, l.posicao
+            SELECT
+                m.tag_maquina,
+                m.nome_maquina,
+                m.tipo,
+                l.linha,
+                l.posicao,
+                e.max_pcb_peso_kg,
+                e.min_pcb_comp_mm,
+                e.min_pcb_larg_mm,
+                e.max_pcb_comp_mm,
+                e.max_pcb_larg_mm,
+                e.max_height_limit_mm
             FROM maquinas m
-            LEFT JOIN linha l ON m.tag_maquina = l.tag_maquina
+            LEFT JOIN linha l           ON m.tag_maquina = l.tag_maquina
+            LEFT JOIN espec_maquinas e  ON m.tag_maquina = e.tag_maquina
             ORDER BY l.linha, l.posicao
         """
         resultado = conn.execute(query).fetchall()
-        return [dict(row) for row in resultado] # Converte para lista de dicionários
+        return [dict(row) for row in resultado]
     except Exception as e:
         print(f"Erro ao buscar resumo: {e}")
         return []
@@ -208,3 +221,44 @@ def delete(tag_maquina):
         return False, f"Erro ao excluir: {e}"
     finally:
         conn.close()
+
+def listar_maquinas_agrupadas_por_linha():
+    """
+    Retorna todas as máquinas que estão associadas a alguma linha,
+    agrupadas por número de linha e ordenadas por posição.
+    """
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            l.linha,
+            l.posicao,
+            l.tag_maquina,
+            m.nome_maquina AS nome,
+            e.min_pcb_larg_mm,
+            e.max_pcb_larg_mm,
+            e.min_pcb_comp_mm,
+            e.max_pcb_comp_mm,
+            e.max_height_limit_mm,
+            e.max_pcb_peso_kg
+        FROM linha l
+        INNER JOIN maquinas m        ON m.tag_maquina = l.tag_maquina
+        LEFT JOIN espec_maquinas e   ON e.tag_maquina = l.tag_maquina
+        ORDER BY l.linha, l.posicao
+    """)
+
+    linhas_db = cursor.fetchall()
+    conn.close()
+
+    resultado = {}
+    for row in linhas_db:
+        dados_maquina = dict(row)
+        numero_linha = dados_maquina["linha"]
+
+        if numero_linha not in resultado:
+            resultado[numero_linha] = []
+
+        resultado[numero_linha].append(dados_maquina)
+
+    return resultado

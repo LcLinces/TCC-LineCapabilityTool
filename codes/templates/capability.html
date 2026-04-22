@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="cap-wrapper">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CABEÇALHO                                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="cap-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
+    <div style="width:40px;"></div>
+    <h4 class="mb-0 font-weight-bold">Capabilidade de Linha</h4>
+    <a href="/" class="btn btn-sm btn-outline-light" title="Voltar ao início">🏠</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- ÁREA SUPERIOR                               -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="cap-area-superior">
+    <div class="row h-100 m-0">
+
+      <!-- COLUNA ESQUERDA -->
+      <div class="col-md-6 d-flex flex-column p-2">
+
+        <div class="card shadow-sm">
+          <div class="card-header bg-dark text-white font-weight-bold text-center py-2">
+            TESTE DE PCB
+          </div>
+          <div class="card-body py-2">
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="font-weight-bold small mb-1">Largura (mm)</label>
+                <input type="number" id="in-largura" class="form-control form-control-sm"
+                       placeholder="mm" step="0.01" min="0">
+              </div>
+              <div class="form-group col-md-6 mb-2">
+                <label class="font-weight-bold small mb-1">Comprimento (mm)</label>
+                <input type="number" id="in-comprimento" class="form-control form-control-sm"
+                       placeholder="mm" step="0.01" min="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-2">
+                <label class="font-weight-bold small mb-1">Peso (kg)</label>
+                <input type="number" id="in-peso" class="form-control form-control-sm"
+                       placeholder="kg" step="0.01" min="0">
+              </div>
+              <div class="form-group col-md-6 mb-2">
+                <label class="font-weight-bold small mb-1">Altura (mm)</label>
+                <input type="number" id="in-altura" class="form-control form-control-sm"
+                       placeholder="mm" step="0.01" min="0">
+              </div>
+            </div>
+            <div id="cap-form-feedback"></div>
+          </div>
+        </div>
+
+        <button id="btn-check" class="btn btn-primary btn-block font-weight-bold mt-2 py-2">
+          Verificar Capabilidade
+        </button>
+
+      </div>
+
+      <!-- COLUNA DIREITA -->
+      <div class="col-md-6 d-flex flex-column p-2">
+
+        <!-- Card Status - Linha -->
+        <div class="card shadow-sm mb-2">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+            <span class="font-weight-bold">Status - Linha</span>
+            <select id="select-linha" class="form-control form-control-sm" style="max-width: 120px;">
+              <option value="">— Linha —</option>
+            </select>
+          </div>
+          <div class="card-body py-2">
+            <div class="row no-gutters">
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. mín.</div><div class="font-weight-bold" id="env-min-comp">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. mín.</div><div class="font-weight-bold" id="env-min-larg">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Peso máx.</div><div class="font-weight-bold" id="env-max-peso">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. máx.</div><div class="font-weight-bold" id="env-max-comp">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. máx.</div><div class="font-weight-bold" id="env-max-larg">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Altura máx.</div><div class="font-weight-bold" id="env-max-alt">—</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Status - Máquina -->
+        <div class="card shadow-sm border-warning flex-grow-1">
+          <div class="card-header bg-dark text-white py-2">
+            <span class="font-weight-bold" id="titulo-maq">Status - Máquina</span>
+          </div>
+          <div class="card-body py-2">
+            <div id="painel-maquina-vazio" class="text-center text-muted py-3">
+              Clique numa máquina abaixo para ver seus limites.
+            </div>
+            <div id="painel-maquina-dados" class="row no-gutters" style="display:none;">
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. mín.</div><div class="font-weight-bold" id="maq-min-comp">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. mín.</div><div class="font-weight-bold" id="maq-min-larg">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Peso máx.</div><div class="font-weight-bold" id="maq-max-peso">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. máx.</div><div class="font-weight-bold" id="maq-max-comp">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. máx.</div><div class="font-weight-bold" id="maq-max-larg">—</div></div></div>
+              <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Altura máx.</div><div class="font-weight-bold" id="maq-max-alt">—</div></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- FAIXA DE MÁQUINAS                           -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="cap-faixa-wrapper">
+    <div class="card shadow-sm h-100 mx-2 mb-2">
+      <div class="card-header bg-dark text-white font-weight-bold py-1 px-3" style="font-size:.85rem;">
+        Linha de Produção
+      </div>
+      <div class="card-body p-2 overflow-auto">
+        <div id="cap-linha-maquinas" class="d-flex flex-row h-100 align-items-center">
+          <p class="text-muted text-center w-100 mb-0">
+            Selecione uma linha acima para visualizar suas máquinas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .cap-wrapper { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  .cap-area-superior { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .cap-faixa-wrapper { flex: 0 0 180px; min-height: 0; }
+
+  .cap-maquina-card {
+    min-width: 72px; max-width: 72px; background: #343a40; color: #fff;
+    border-radius: 6px; padding: 6px 4px; margin-right: 4px; text-align: center;
+    font-size: 0.68rem; font-weight: 600; line-height: 1.1; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s; word-break: break-word;
+  }
+  .cap-maquina-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+  .cap-maquina-card.selecionada { outline: 3px solid #ffc107; }
+
+  .cap-indicador {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #adb5bd; margin: 6px auto 0; border: 2px solid #fff;
+  }
+  .cap-indicador.ok  { background: #28a745; }
+  .cap-indicador.nok { background: #dc3545; }
+  .cap-indicador.inc { background: #ffc107; }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+// ══════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════════════════════
+let todasMaquinas       = [];
+let linhaAtual          = null;
+let maquinasDaLinha     = [];
+let ultimoResultado     = null;
+let tagMaquinaSelecion  = null;
+
+// ══════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  await carregarMaquinas();
+  configurarEventos();
+});
+
+// ══════════════════════════════════════════════════════
+// CARREGAR MÁQUINAS E POPULAR DROPDOWN
+// ══════════════════════════════════════════════════════
+async function carregarMaquinas() {
+  try {
+    const resp = await fetch('/api/maquinas');
+    todasMaquinas = await resp.json();
+
+    const linhasUnicas = [...new Set(
+      todasMaquinas
+        .map(m => m.linha)
+        .filter(l => l !== null && l !== undefined && l !== '')
+    )].sort((a, b) => a - b);
+
+    const select = document.getElementById('select-linha');
+    select.innerHTML = '<option value="">— Linha —</option>';
+    linhasUnicas.forEach(numero => {
+      const opt = document.createElement('option');
+      opt.value = numero;
+      opt.textContent = `Linha ${numero}`;
+      select.appendChild(opt);
+    });
+  } catch (e) {
+    console.error('Erro ao carregar máquinas:', e);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// AO SELECIONAR UMA LINHA
+// ══════════════════════════════════════════════════════
+function aoSelecionarLinha() {
+  const valor = document.getElementById('select-linha').value;
+
+  tagMaquinaSelecion = null;
+  ultimoResultado = null;
+  limparPainelMaquina();
+  limparEnvelope();
+
+  if (!valor) {
+    linhaAtual = null;
+    maquinasDaLinha = [];
+    renderizarFaixaMaquinas([]);
+    return;
+  }
+
+  linhaAtual = Number(valor);
+
+  maquinasDaLinha = todasMaquinas
+    .filter(m => Number(m.linha) === linhaAtual)
+    .sort((a, b) => (a.posicao || 0) - (b.posicao || 0));
+
+  renderizarFaixaMaquinas(maquinasDaLinha);
+
+  // Já mostra o envelope da linha (sem precisar rodar teste)
+  atualizarEnvelope(calcularEnvelopeLocal(maquinasDaLinha));
+}
+
+// ══════════════════════════════════════════════════════
+// RENDERIZAR A FAIXA DE MÁQUINAS
+// ══════════════════════════════════════════════════════
+function renderizarFaixaMaquinas(maquinas) {
+  const container = document.getElementById('cap-linha-maquinas');
+  container.innerHTML = '';
+
+  if (maquinas.length === 0) {
+    container.innerHTML = `
+      <p class="text-muted text-center w-100 mb-0">
+        Selecione uma linha acima para visualizar suas máquinas.
+      </p>`;
+    return;
+  }
+
+  maquinas.forEach(m => {
+    const resultadoMaq = ultimoResultado
+      ? ultimoResultado.maquinas.find(x => x.tag_maquina === m.tag_maquina)
+      : null;
+
+    const classeIndicador = resultadoMaq
+      ? (resultadoMaq.status === 'OK'  ? 'ok'
+       : resultadoMaq.status === 'NOK' ? 'nok' : 'inc')
+      : '';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'd-flex flex-column align-items-center';
+
+    wrapper.innerHTML = `
+      <div class="cap-maquina-card ${m.tag_maquina === tagMaquinaSelecion ? 'selecionada' : ''}"
+           data-tag="${m.tag_maquina}">
+        ${m.nome_maquina || m.tag_maquina}
+      </div>
+      <div class="cap-indicador ${classeIndicador}"></div>
+    `;
+
+    wrapper.querySelector('.cap-maquina-card').addEventListener('click', () => {
+      aoClicarMaquina(m.tag_maquina);
+    });
+
+    container.appendChild(wrapper);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// AO CLICAR NUMA MÁQUINA
+// ══════════════════════════════════════════════════════
+function aoClicarMaquina(tag) {
+  tagMaquinaSelecion = tag;
+  renderizarFaixaMaquinas(maquinasDaLinha);
+
+  const maq = maquinasDaLinha.find(m => m.tag_maquina === tag);
+  if (!maq) return;
+
+  document.getElementById('titulo-maq').textContent =
+    `Status - ${maq.nome_maquina || maq.tag_maquina}`;
+
+  document.getElementById('maq-min-comp').textContent = fmt(maq.min_pcb_comp_mm, 'mm');
+  document.getElementById('maq-min-larg').textContent = fmt(maq.min_pcb_larg_mm, 'mm');
+  document.getElementById('maq-max-peso').textContent = fmt(maq.max_pcb_peso_kg, 'kg');
+  document.getElementById('maq-max-comp').textContent = fmt(maq.max_pcb_comp_mm, 'mm');
+  document.getElementById('maq-max-larg').textContent = fmt(maq.max_pcb_larg_mm, 'mm');
+  document.getElementById('maq-max-alt').textContent  = fmt(maq.max_height_limit_mm, 'mm');
+
+  document.getElementById('painel-maquina-vazio').style.display = 'none';
+  document.getElementById('painel-maquina-dados').style.display = 'flex';
+}
+
+// ══════════════════════════════════════════════════════
+// BOTÃO VERIFICAR CAPABILIDADE
+// ══════════════════════════════════════════════════════
+async function verificarCapabilidade() {
+  const feedback = document.getElementById('cap-form-feedback');
+  feedback.innerHTML = '';
+
+  if (!linhaAtual) {
+    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">⚠️ Selecione uma linha antes de testar.</div>`;
+    return;
+  }
+
+  const dados = {
+    linha:       linhaAtual,
+    largura:     document.getElementById('in-largura').value,
+    comprimento: document.getElementById('in-comprimento').value,
+    altura:      document.getElementById('in-altura').value,
+    peso:        document.getElementById('in-peso').value,
+  };
+
+  if (!dados.largura || !dados.comprimento || !dados.altura || !dados.peso) {
+    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">⚠️ Preencha largura, comprimento, altura e peso.</div>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch('/api/capabilidade/testar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(dados)
+    });
+    const resultado = await resp.json();
+
+    if (!resultado.sucesso) {
+      feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">❌ ${resultado.mensagem}</div>`;
+      return;
+    }
+
+    ultimoResultado = resultado.linhas[0];
+    atualizarEnvelope(ultimoResultado.envelope);
+    renderizarFaixaMaquinas(maquinasDaLinha);
+
+    const corAlerta = ultimoResultado.status === 'OK' ? 'success' : 'danger';
+    const icone     = ultimoResultado.status === 'OK' ? '✅' : '❌';
+    feedback.innerHTML = `
+      <div class="alert alert-${corAlerta} py-2 mb-0">
+        ${icone} Linha ${linhaAtual}: <strong>${ultimoResultado.status}</strong>
+      </div>`;
+  } catch (e) {
+    console.error(e);
+    feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">❌ Erro de comunicação com o servidor.</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function fmt(valor, unidade) {
+  if (valor === null || valor === undefined || valor === '') return '—';
+  return `${valor} ${unidade}`;
+}
+
+function atualizarEnvelope(env) {
+  document.getElementById('env-min-comp').textContent = fmt(env.min_pcb_comp_mm, 'mm');
+  document.getElementById('env-min-larg').textContent = fmt(env.min_pcb_larg_mm, 'mm');
+  document.getElementById('env-max-peso').textContent = fmt(env.max_pcb_peso_kg, 'kg');
+  document.getElementById('env-max-comp').textContent = fmt(env.max_pcb_comp_mm, 'mm');
+  document.getElementById('env-max-larg').textContent = fmt(env.max_pcb_larg_mm, 'mm');
+  document.getElementById('env-max-alt').textContent  = fmt(env.max_height_limit_mm, 'mm');
+}
+
+function limparEnvelope() {
+  ['env-min-comp','env-min-larg','env-max-peso',
+   'env-max-comp','env-max-larg','env-max-alt'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+}
+
+function limparPainelMaquina() {
+  document.getElementById('titulo-maq').textContent = 'Status - Máquina';
+  document.getElementById('painel-maquina-vazio').style.display = 'block';
+  document.getElementById('painel-maquina-dados').style.display = 'none';
+}
+
+// Calcula o envelope local (mesma lógica do backend)
+function calcularEnvelopeLocal(maquinas) {
+  const camposMin = ["min_pcb_larg_mm", "min_pcb_comp_mm"];
+  const camposMax = ["max_pcb_larg_mm", "max_pcb_comp_mm",
+                     "max_height_limit_mm", "max_pcb_peso_kg"];
+
+  const envelope = {};
+
+  camposMin.forEach(campo => {
+    const valores = maquinas.map(m => m[campo]).filter(v => v !== null && v !== undefined);
+    envelope[campo] = valores.length ? Math.max(...valores) : null;
+  });
+
+  camposMax.forEach(campo => {
+    const valores = maquinas.map(m => m[campo]).filter(v => v !== null && v !== undefined);
+    envelope[campo] = valores.length ? Math.min(...valores) : null;
+  });
+
+  return envelope;
+}
+
+// ══════════════════════════════════════════════════════
+// EVENTOS
+// ══════════════════════════════════════════════════════
+function configurarEventos() {
+  document.getElementById('select-linha').addEventListener('change', aoSelecionarLinha);
+  document.getElementById('btn-check').addEventListener('click', verificarCapabilidade);
+}
+
+</script>
+{% endblock %}
