@@ -256,6 +256,16 @@ def listar_maquinas_agrupadas_por_linha():
         dados_maquina = dict(row)
         numero_linha = dados_maquina["linha"]
 
+        # Ignora máquinas sem linha atribuída
+        if numero_linha is None or numero_linha == "":
+            continue
+
+        # Normaliza pra string (banco pode ter int ou str misturados)
+        numero_linha = str(numero_linha).strip()
+
+        # Garante consistência no dict
+        dados_maquina["linha"] = numero_linha
+
         if numero_linha not in resultado:
             resultado[numero_linha] = []
 

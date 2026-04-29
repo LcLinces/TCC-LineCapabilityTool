@@ -109,13 +109,8 @@ def testar_capabilidade():
     # 3. Pega o filtro opcional de linha
     linha_filtro = dados.get("linha")
     if linha_filtro is not None and linha_filtro != "":
-        try:
-            linha_filtro = int(linha_filtro)
-        except (TypeError, ValueError):
-            return jsonify({
-                "sucesso": False,
-                "mensagem": "Campo 'linha' deve ser um número inteiro."
-            }), 400
+        # Normaliza pra string (linha pode ser nome ou número)
+        linha_filtro = str(linha_filtro).strip()
     else:
         linha_filtro = None  # normaliza string vazia para None
 
@@ -165,3 +160,5 @@ def tela_lineview():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+    
