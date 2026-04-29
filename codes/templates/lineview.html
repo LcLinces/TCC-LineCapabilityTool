@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="lv-wrapper">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CABEÇALHO                                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="lv-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
+    <a href="/capability" class="btn btn-sm btn-outline-light" title="Voltar para Capabilidade">←</a>
+    <h4 class="mb-0 font-weight-bold">Line View — Visão Geral das Linhas</h4>
+    <a href="/" class="btn btn-sm btn-outline-light" title="Voltar ao início">🏠</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- INFORMAÇÃO DO TESTE ATUAL                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="lv-teste-info" class="bg-light border-bottom px-4 py-2" style="font-size: .85rem;">
+    <span class="text-muted">Aguardando dados do teste...</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- ÁREA DE LINHAS (com scroll vertical)        -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="lv-linhas-container">
+    <p class="text-muted text-center mt-5">Carregando...</p>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MODAL: Detalhes da máquina (Bootstrap)         -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="modal fade" id="modalMaquina" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalMaquinaTitulo">Status da Máquina</h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row no-gutters">
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. mín.</div><div class="font-weight-bold" id="mod-min-comp">—</div></div></div>
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. mín.</div><div class="font-weight-bold" id="mod-min-larg">—</div></div></div>
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Peso máx.</div><div class="font-weight-bold" id="mod-max-peso">—</div></div></div>
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Comp. máx.</div><div class="font-weight-bold" id="mod-max-comp">—</div></div></div>
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Larg. máx.</div><div class="font-weight-bold" id="mod-max-larg">—</div></div></div>
+          <div class="col-4 p-1"><div class="border rounded p-2 text-center"><div class="small text-muted">Altura máx.</div><div class="font-weight-bold" id="mod-max-alt">—</div></div></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Wrapper geral: ocupa tela inteira sem scroll */
+  .lv-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Container das linhas: ocupa o que sobrar e tem scroll vertical */
+  #lv-linhas-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  /* Cada container de linha: altura fixa pra caber 4 na tela */
+  .lv-linha-card {
+    margin-bottom: 8px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    /* Cada linha ocupa ~22% da altura disponível pra caber 4 visíveis */
+    min-height: calc((100vh - 110px) / 4);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Cabeçalho da linha (preto com nome + LED) */
+  .lv-linha-header {
+    color: #fff;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    background: #343a40;  /* fallback caso não seja linha-1/2/3/4 */
+  }
+
+  .lv-linha-header .lv-led {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #6c757d;
+    border: 2px solid #fff;
+    margin-right: 10px;
+  }
+  .lv-linha-header .lv-led.ok  { background: #28a745; }
+  .lv-linha-header .lv-led.nok { background: #dc3545; }
+
+  .lv-linha-header.linha-1 { background: #1976d2; }  /* Laranja muito escuro */
+  .lv-linha-header.linha-2 { background: #1b5e20; }  /* Verde escuro */
+  .lv-linha-header.linha-3 { background: #4e2600; }  /* Laranja muito escuro */
+  .lv-linha-header.linha-4 { background: #fbc02d; color: #212529; }  /* Amarelo + texto escuro pra contraste */
+
+  /* Faixa de máquinas dentro da linha */
+  .lv-faixa-maquinas {
+    flex: 1 1 auto;
+    padding: 6px;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    align-items: stretch;
+  }
+
+  /* Wrapper de cada máquina */
+  .lv-faixa-maquinas > div {
+    flex: 0 0 35px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lv-faixa-maquinas > div:has(.lv-maquina-card.larga) {
+    flex: 0 0 70px;
+  }
+
+  /* Card de máquina */
+  .lv-maquina-card {
+    width: 100%;
+    background: #343a40;
+    color: #fff;
+    border-radius: 4px;
+    padding: 3px 2px;
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.3px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    user-select: none;
+  }
+  .lv-maquina-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 5;
+  }
+
+  /* Indicador OK/NOK abaixo do card */
+  .lv-indicador {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #adb5bd;
+    margin-top: 4px;
+    border: 2px solid #fff;
+  }
+  .lv-indicador.ok  { background: #28a745; }
+  .lv-indicador.nok { background: #dc3545; }
+  .lv-indicador.inc { background: #ffc107; }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+// ══════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════════════════════
+let todasMaquinas    = [];     // todas as máquinas (do /api/maquinas)
+let resultadoTeste   = null;   // resposta da API com status de cada linha (se houver teste)
+let dadosTeste       = null;   // valores do PCB testado (do sessionStorage)
+
+
+// ══════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  // Lê os dados do teste do sessionStorage (se existirem)
+  const dadosSalvos = sessionStorage.getItem('capabilidade_teste');
+  if (dadosSalvos) {
+    dadosTeste = JSON.parse(dadosSalvos);
+  }
+
+  // Carrega todas as máquinas (sempre, independente de ter teste)
+  await carregarMaquinas();
+
+  // Se tem teste, roda a verificação no backend; senão, só mostra estrutura "apagada"
+  if (dadosTeste) {
+    await rodarTeste();
+  }
+
+  renderizarLinhas();
+});
+
+
+// ══════════════════════════════════════════════════════
+// CARREGA TODAS AS MÁQUINAS
+// ══════════════════════════════════════════════════════
+async function carregarMaquinas() {
+  try {
+    const resp = await fetch('/api/maquinas');
+    todasMaquinas = await resp.json();
+  } catch (e) {
+    console.error('Erro ao carregar máquinas:', e);
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// RODA O TESTE (chama o endpoint sem filtro de linha)
+// ══════════════════════════════════════════════════════
+async function rodarTeste() {
+  try {
+    // Sem o campo "linha", o backend retorna todas as linhas avaliadas
+    const resp = await fetch('/api/capabilidade/testar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(dadosTeste)
+    });
+    const json = await resp.json();
+    if (json.sucesso) {
+      resultadoTeste = json;
+      atualizarInfoTeste(dadosTeste);
+    } else {
+      console.error('Erro do servidor:', json.mensagem);
+    }
+  } catch (e) {
+    console.error('Erro ao rodar teste:', e);
+  }
+}
+
+
+// ══════════════════════════════════════════════════════
+// ATUALIZA A FAIXA DE INFO DO TESTE NO TOPO
+// ══════════════════════════════════════════════════════
+function atualizarInfoTeste(teste) {
+  const info = document.getElementById('lv-teste-info');
+  info.innerHTML = `
+    <strong>PCB testado:</strong>
+    Largura ${teste.largura}mm
+    | Comprimento ${teste.comprimento}mm
+    | Altura ${teste.altura}mm
+    | Peso ${teste.peso}kg
+  `;
+}
+
+
+// ══════════════════════════════════════════════════════
+// RENDERIZA OS CONTAINERS DE TODAS AS LINHAS
+// ══════════════════════════════════════════════════════
+function renderizarLinhas() {
+  const container = document.getElementById('lv-linhas-container');
+  container.innerHTML = '';
+
+  // Agrupa as máquinas por linha
+  const linhas = {};
+  todasMaquinas.forEach(m => {
+    if (m.linha === null || m.linha === undefined || m.linha === '') return;
+    const numLinha = Number(m.linha);
+    if (!linhas[numLinha]) linhas[numLinha] = [];
+    linhas[numLinha].push(m);
+  });
+
+  // Pega os números de linha em ordem crescente
+  const numerosLinhas = Object.keys(linhas).map(Number).sort((a, b) => a - b);
+
+  if (numerosLinhas.length === 0) {
+    container.innerHTML = `<p class="text-muted text-center mt-5">Nenhuma linha cadastrada.</p>`;
+    return;
+  }
+
+  // Cria um card pra cada linha
+  numerosLinhas.forEach(numLinha => {
+    const maquinasOrdenadas = linhas[numLinha]
+      .sort((a, b) => (a.posicao || 0) - (b.posicao || 0));
+
+    // Busca o status dessa linha no resultado (se houver teste)
+    const statusLinha = resultadoTeste
+      ? resultadoTeste.linhas.find(l => l.linha === numLinha)
+      : null;
+
+    container.appendChild(criarCardLinha(numLinha, maquinasOrdenadas, statusLinha));
+  });
+}
+
+
+// ══════════════════════════════════════════════════════
+// CRIA UM CARD DE LINHA INDIVIDUAL
+// ══════════════════════════════════════════════════════
+function criarCardLinha(numLinha, maquinas, statusLinha) {
+  const card = document.createElement('div');
+  card.className = 'lv-linha-card';
+
+  // Determina classe do LED da linha
+  const ledClasse = statusLinha
+    ? (statusLinha.status === 'OK' ? 'ok' : 'nok')
+    : '';
+
+  // Cabeçalho com LED + nome
+  const header = document.createElement('div');
+  header.className = `lv-linha-header linha-${numLinha}`;
+  header.innerHTML = `
+    <span class="lv-led ${ledClasse}"></span>
+    <span class="lv-titulo">Linha ${numLinha}</span>
+    <span class="lv-spacer"></span>
+  `;
+  card.appendChild(header);
+
+  // Faixa horizontal das máquinas
+  const faixa = document.createElement('div');
+  faixa.className = 'lv-faixa-maquinas';
+
+  maquinas.forEach(m => {
+    // Se houve teste, busca status da máquina
+    const statusMaq = statusLinha
+      ? statusLinha.maquinas.find(x => x.tag_maquina === m.tag_maquina)
+      : null;
+
+    const classeIndicador = statusMaq
+      ? (statusMaq.status === 'OK'  ? 'ok'
+       : statusMaq.status === 'NOK' ? 'nok' : 'inc')
+      : '';
+
+    const textoExibido = m.tipo || m.nome_maquina || m.tag_maquina;
+    const ehLarga = (m.tipo || m.nome_maquina || '').toUpperCase().includes('REFLOW');
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div class="lv-maquina-card ${ehLarga ? 'larga' : ''}"
+           data-tag="${m.tag_maquina}"
+           title="${m.nome_maquina || m.tag_maquina}">
+        ${textoExibido}
+      </div>
+      <div class="lv-indicador ${classeIndicador}"></div>
+    `;
+
+    wrapper.querySelector('.lv-maquina-card').addEventListener('click', () => {
+      abrirModalMaquina(m);
+    });
+
+    faixa.appendChild(wrapper);
+  });
+
+  card.appendChild(faixa);
+  return card;
+}
+
+
+// ══════════════════════════════════════════════════════
+// ABRE O MODAL COM OS LIMITES DA MÁQUINA
+// ══════════════════════════════════════════════════════
+function abrirModalMaquina(maquina) {
+  document.getElementById('modalMaquinaTitulo').textContent =
+    `Status - ${maquina.nome_maquina || maquina.tag_maquina}`;
+
+  document.getElementById('mod-min-comp').textContent = fmt(maquina.min_pcb_comp_mm, 'mm');
+  document.getElementById('mod-min-larg').textContent = fmt(maquina.min_pcb_larg_mm, 'mm');
+  document.getElementById('mod-max-peso').textContent = fmt(maquina.max_pcb_peso_kg, 'kg');
+  document.getElementById('mod-max-comp').textContent = fmt(maquina.max_pcb_comp_mm, 'mm');
+  document.getElementById('mod-max-larg').textContent = fmt(maquina.max_pcb_larg_mm, 'mm');
+  document.getElementById('mod-max-alt').textContent  = fmt(maquina.max_height_limit_mm, 'mm');
+
+  // Pinta valores de cor verde/vermelho se houver teste
+  if (dadosTeste) {
+    pintarValor('mod-min-comp', dadosTeste.comprimento >= maquina.min_pcb_comp_mm);
+    pintarValor('mod-max-comp', dadosTeste.comprimento <= maquina.max_pcb_comp_mm);
+    pintarValor('mod-min-larg', dadosTeste.largura     >= maquina.min_pcb_larg_mm);
+    pintarValor('mod-max-larg', dadosTeste.largura     <= maquina.max_pcb_larg_mm);
+    pintarValor('mod-max-alt',  dadosTeste.altura      <= maquina.max_height_limit_mm);
+    pintarValor('mod-max-peso', dadosTeste.peso        <= maquina.max_pcb_peso_kg);
+  } else {
+    // Sem teste, remove cores
+    ['mod-min-comp','mod-min-larg','mod-max-peso',
+     'mod-max-comp','mod-max-larg','mod-max-alt'].forEach(id => {
+      document.getElementById(id).classList.remove('valor-ok', 'valor-nok');
+    });
+  }
+
+  // Abre o modal Bootstrap (jQuery vem do base.html)
+  $('#modalMaquina').modal('show');
+}
+
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function fmt(valor, unidade) {
+  if (valor === null || valor === undefined || valor === '') return '—';
+  return `${valor} ${unidade}`;
+}
+
+function pintarValor(id, passou) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('valor-ok', 'valor-nok');
+  if (passou) el.classList.add('valor-ok');
+  else        el.classList.add('valor-nok');
+}
+
+</script>
+{% endblock %}

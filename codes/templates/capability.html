@@ -58,6 +58,10 @@
           Verificar Capabilidade
         </button>
 
+        <button id="btn-lineview" class="btn btn-dark btn-block font-weight-bold mt-2 py-2">
+          📊 Ver Todas as Linhas (Line View)
+        </button>
+
       </div>
 
       <!-- COLUNA DIREITA -->
@@ -66,7 +70,10 @@
         <!-- Card Status - Linha -->
         <div class="card shadow-sm mb-2">
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
-            <span class="font-weight-bold">Status - Linha</span>
+            <span class="font-weight-bold">
+              <span class="cap-led" id="led-linha"></span>
+              Status - Linha
+            </span>
             <select id="select-linha" class="form-control form-control-sm" style="max-width: 120px;">
               <option value="">— Linha —</option>
             </select>
@@ -86,7 +93,10 @@
         <!-- Card Status - Máquina -->
         <div class="card shadow-sm border-warning flex-grow-1">
           <div class="card-header bg-dark text-white py-2">
-            <span class="font-weight-bold" id="titulo-maq">Status - Máquina</span>
+            <span class="font-weight-bold">
+              <span class="cap-led" id="led-maq"></span>
+              <span id="titulo-maq">Status - Máquina</span>
+            </span>
           </div>
           <div class="card-body py-2">
             <div id="painel-maquina-vazio" class="text-center text-muted py-3">
@@ -115,8 +125,8 @@
       <div class="card-header bg-dark text-white font-weight-bold py-1 px-3" style="font-size:.85rem;">
         Linha de Produção
       </div>
-      <div class="card-body p-2 overflow-auto">
-        <div id="cap-linha-maquinas" class="d-flex flex-row h-100 align-items-center">
+      <div class="card-body p-1" style="overflow-x: auto;">
+        <div id="cap-linha-maquinas" class="d-flex flex-row h-100 align-items-stretch" style="height: 100%">
           <p class="text-muted text-center w-100 mb-0">
             Selecione uma linha acima para visualizar suas máquinas.
           </p>
@@ -130,16 +140,58 @@
 <style>
   .cap-wrapper { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
   .cap-area-superior { flex: 1 1 auto; min-height: 0; overflow: hidden; }
-  .cap-faixa-wrapper { flex: 0 0 180px; min-height: 0; }
+  .cap-faixa-wrapper { flex: 0 0 220px; min-height: 0; }
 
-  .cap-maquina-card {
-    min-width: 72px; max-width: 72px; background: #343a40; color: #fff;
-    border-radius: 6px; padding: 6px 4px; margin-right: 4px; text-align: center;
-    font-size: 0.68rem; font-weight: 600; line-height: 1.1; cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s; word-break: break-word;
+  /* Container da faixa */
+  #cap-linha-maquinas {
+    gap: 2px;
+    width: 100%;
   }
-  .cap-maquina-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-  .cap-maquina-card.selecionada { outline: 3px solid #ffc107; }
+
+  /* Wrapper de cada máquina: largura fixa 35px */
+  #cap-linha-maquinas > div {
+    height: 100%;
+    flex: 0 0 35px;
+    min-width: 0;
+  }
+
+  /* REFLOW OVEN: o dobro (70px) */
+  #cap-linha-maquinas > div:has(.cap-maquina-card.larga) {
+    flex: 0 0 70px;
+  }
+
+  /* Cada card */
+  .cap-maquina-card {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    background: #343a40;
+    color: #fff;
+    border-radius: 5px;
+    padding: 3px 2px;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 130px;
+    user-select: none;
+  }
+
+  .cap-maquina-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 5;
+  }
+  .cap-maquina-card.selecionada {
+    outline: 3px solid #ffc107;
+  }
 
   .cap-indicador {
     width: 14px; height: 14px; border-radius: 50%;
@@ -148,6 +200,24 @@
   .cap-indicador.ok  { background: #28a745; }
   .cap-indicador.nok { background: #dc3545; }
   .cap-indicador.inc { background: #ffc107; }
+
+  /* LED de status (ao lado do título) */
+  .cap-led {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #6c757d;
+    border: 2px solid #fff;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .cap-led.ok  { background: #28a745; }
+  .cap-led.nok { background: #dc3545; }
+
+  /* Cor do texto dos valores dos parâmetros */
+  .valor-ok  { color: #28a745 !important; }
+  .valor-nok { color: #dc3545 !important; }
 </style>
 
 {% endblock %}
@@ -209,6 +279,7 @@ function aoSelecionarLinha() {
   ultimoResultado = null;
   limparPainelMaquina();
   limparEnvelope();
+  limparStatusVisual();
 
   if (!valor) {
     linhaAtual = null;
@@ -224,8 +295,6 @@ function aoSelecionarLinha() {
     .sort((a, b) => (a.posicao || 0) - (b.posicao || 0));
 
   renderizarFaixaMaquinas(maquinasDaLinha);
-
-  // Já mostra o envelope da linha (sem precisar rodar teste)
   atualizarEnvelope(calcularEnvelopeLocal(maquinasDaLinha));
 }
 
@@ -257,10 +326,14 @@ function renderizarFaixaMaquinas(maquinas) {
     const wrapper = document.createElement('div');
     wrapper.className = 'd-flex flex-column align-items-center';
 
+    const textoExibido = m.tipo || m.nome_maquina || m.tag_maquina;
+    const ehLarga = (m.tipo || m.nome_maquina || '').toUpperCase().includes('REFLOW');
+
     wrapper.innerHTML = `
-      <div class="cap-maquina-card ${m.tag_maquina === tagMaquinaSelecion ? 'selecionada' : ''}"
-           data-tag="${m.tag_maquina}">
-        ${m.nome_maquina || m.tag_maquina}
+      <div class="cap-maquina-card ${m.tag_maquina === tagMaquinaSelecion ? 'selecionada' : ''} ${ehLarga ? 'larga' : ''}"
+           data-tag="${m.tag_maquina}"
+           title="${m.nome_maquina || m.tag_maquina}">
+        ${textoExibido}
       </div>
       <div class="cap-indicador ${classeIndicador}"></div>
     `;
@@ -295,6 +368,19 @@ function aoClicarMaquina(tag) {
 
   document.getElementById('painel-maquina-vazio').style.display = 'none';
   document.getElementById('painel-maquina-dados').style.display = 'flex';
+
+  if (ultimoResultado) {
+    const resultadoMaq = ultimoResultado.maquinas.find(x => x.tag_maquina === tag);
+    if (resultadoMaq) {
+      setLed('led-maq', resultadoMaq.status);
+      aplicarCoresMaquina(maq, ultimoResultado.teste || {
+        largura: parseFloat(document.getElementById('in-largura').value),
+        comprimento: parseFloat(document.getElementById('in-comprimento').value),
+        altura: parseFloat(document.getElementById('in-altura').value),
+        peso: parseFloat(document.getElementById('in-peso').value),
+      });
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -303,6 +389,7 @@ function aoClicarMaquina(tag) {
 async function verificarCapabilidade() {
   const feedback = document.getElementById('cap-form-feedback');
   feedback.innerHTML = '';
+  limparStatusVisual();
 
   if (!linhaAtual) {
     feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">⚠️ Selecione uma linha antes de testar.</div>`;
@@ -336,15 +423,20 @@ async function verificarCapabilidade() {
     }
 
     ultimoResultado = resultado.linhas[0];
+
+    // Salva os dados do teste no sessionStorage pro Line View consumir
+    sessionStorage.setItem('capabilidade_teste', JSON.stringify(resultado.teste));
+
     atualizarEnvelope(ultimoResultado.envelope);
+    aplicarCoresEnvelope(ultimoResultado.envelope, resultado.teste);
+    setLed('led-linha', ultimoResultado.status);
+
+    if (tagMaquinaSelecion) {
+      aoClicarMaquina(tagMaquinaSelecion);
+    }
+
     renderizarFaixaMaquinas(maquinasDaLinha);
 
-    const corAlerta = ultimoResultado.status === 'OK' ? 'success' : 'danger';
-    const icone     = ultimoResultado.status === 'OK' ? '✅' : '❌';
-    feedback.innerHTML = `
-      <div class="alert alert-${corAlerta} py-2 mb-0">
-        ${icone} Linha ${linhaAtual}: <strong>${ultimoResultado.status}</strong>
-      </div>`;
   } catch (e) {
     console.error(e);
     feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">❌ Erro de comunicação com o servidor.</div>`;
@@ -381,7 +473,56 @@ function limparPainelMaquina() {
   document.getElementById('painel-maquina-dados').style.display = 'none';
 }
 
-// Calcula o envelope local (mesma lógica do backend)
+function setLed(idLed, status) {
+  const led = document.getElementById(idLed);
+  if (!led) return;
+  led.classList.remove('ok', 'nok');
+  if (status === 'OK')  led.classList.add('ok');
+  if (status === 'NOK' || status === 'INCONCLUSIVO') led.classList.add('nok');
+}
+
+function limparStatusVisual() {
+  ['led-linha', 'led-maq'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('ok', 'nok');
+  });
+
+  const todosIds = [
+    'env-min-comp','env-min-larg','env-max-peso','env-max-comp','env-max-larg','env-max-alt',
+    'maq-min-comp','maq-min-larg','maq-max-peso','maq-max-comp','maq-max-larg','maq-max-alt',
+  ];
+  todosIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('valor-ok', 'valor-nok');
+  });
+}
+
+function aplicarCoresEnvelope(env, teste) {
+  pintarValor('env-min-comp', teste.comprimento >= env.min_pcb_comp_mm);
+  pintarValor('env-max-comp', teste.comprimento <= env.max_pcb_comp_mm);
+  pintarValor('env-min-larg', teste.largura     >= env.min_pcb_larg_mm);
+  pintarValor('env-max-larg', teste.largura     <= env.max_pcb_larg_mm);
+  pintarValor('env-max-alt',  teste.altura      <= env.max_height_limit_mm);
+  pintarValor('env-max-peso', teste.peso        <= env.max_pcb_peso_kg);
+}
+
+function aplicarCoresMaquina(maq, teste) {
+  pintarValor('maq-min-comp', teste.comprimento >= maq.min_pcb_comp_mm);
+  pintarValor('maq-max-comp', teste.comprimento <= maq.max_pcb_comp_mm);
+  pintarValor('maq-min-larg', teste.largura     >= maq.min_pcb_larg_mm);
+  pintarValor('maq-max-larg', teste.largura     <= maq.max_pcb_larg_mm);
+  pintarValor('maq-max-alt',  teste.altura      <= maq.max_height_limit_mm);
+  pintarValor('maq-max-peso', teste.peso        <= maq.max_pcb_peso_kg);
+}
+
+function pintarValor(id, passou) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('valor-ok', 'valor-nok');
+  if (passou)       el.classList.add('valor-ok');
+  else              el.classList.add('valor-nok');
+}
+
 function calcularEnvelopeLocal(maquinas) {
   const camposMin = ["min_pcb_larg_mm", "min_pcb_comp_mm"];
   const camposMax = ["max_pcb_larg_mm", "max_pcb_comp_mm",
@@ -408,6 +549,9 @@ function calcularEnvelopeLocal(maquinas) {
 function configurarEventos() {
   document.getElementById('select-linha').addEventListener('change', aoSelecionarLinha);
   document.getElementById('btn-check').addEventListener('click', verificarCapabilidade);
+  document.getElementById('btn-lineview').addEventListener('click', () => {
+    window.location.href = '/lineview';
+  });
 }
 
 </script>

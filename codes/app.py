@@ -159,5 +159,9 @@ def testar_capabilidade():
 def tela_capabilidade():
     return render_template('capability.html')
 
+@app.route('/lineview')
+def tela_lineview():
+    return render_template('lineview.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
