@@ -29,18 +29,26 @@
       <option value="">Todos</option>
     </select>
 
-    <!-- Indicador de modo + botões de modo -->
-    <div id="painel-header">
-      <div></div>
-      <span id="modo-label">MODE: VIEW</span>
-
-      <div class="btn-group btn-group-sm">
-        <button class="btn btn-outline-light  modo-btn active" data-modo="view"   title="Visualizar">👁 VER</button>
-        <button class="btn btn-outline-warning modo-btn"       data-modo="edit"   title="Editar">✏️ EDITAR</button>
-        <button class="btn btn-outline-success modo-btn"       data-modo="new"    title="Novo">＋ NOVO</button>
-        <button class="btn btn-outline-danger  modo-btn"       data-modo="delete" title="Excluir">🗑 EXCLUIR</button>
-      </div>
+    <!-- Botões de modo (CRUD) -->
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-outline-light  modo-btn active" data-modo="view"   title="Visualizar"> VER</button>
+      <button class="btn btn-outline-warning modo-btn"       data-modo="edit"   title="Editar"> EDITAR</button>
+      <button class="btn btn-outline-success modo-btn"       data-modo="new"    title="Novo"> NOVO</button>
+      <button class="btn btn-outline-danger  modo-btn"       data-modo="delete" title="Excluir"> EXCLUIR</button>
     </div>
+
+    <!-- Indicador de modo -->
+    <span id="modo-label" class="mx-auto">MODE: VIEW</span>
+
+    <!-- Botão Home (empurrado pra direita) -->
+    <a href="/" class="btn-home-clean ml-auto" title="Voltar ao início">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5"></path>
+        <path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"></path>
+        <path d="M9 21v-6h6v6"></path>
+      </svg>
+    </a>
 
   </div>
 

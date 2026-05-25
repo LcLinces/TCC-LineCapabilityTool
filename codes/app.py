@@ -5,8 +5,12 @@ from capability import avaliar_linha, calcular_linha
 app = Flask(__name__)
 
 @app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/maquinas')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')    
 
 @app.route('/api/maquinas')
 def api_maquinas():
