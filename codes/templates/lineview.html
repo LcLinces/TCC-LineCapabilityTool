@@ -276,13 +276,13 @@ function renderizarLinhas() {
   const linhas = {};
   todasMaquinas.forEach(m => {
     if (m.linha === null || m.linha === undefined || m.linha === '') return;
-    const numLinha = Number(m.linha);
+    const numLinha = String(m.linha).trim();  // ← ALTERADO: usa string em vez de Number
     if (!linhas[numLinha]) linhas[numLinha] = [];
     linhas[numLinha].push(m);
   });
 
-  // Pega os números de linha em ordem crescente
-  const numerosLinhas = Object.keys(linhas).map(Number).sort((a, b) => a - b);
+  // Pega os nomes de linha em ordem alfabética
+  const numerosLinhas = Object.keys(linhas).sort();  // ← ALTERADO: ordenação alfabética
 
   if (numerosLinhas.length === 0) {
     container.innerHTML = `<p class="text-muted text-center mt-5">Nenhuma linha cadastrada.</p>`;
@@ -296,7 +296,7 @@ function renderizarLinhas() {
 
     // Busca o status dessa linha no resultado (se houver teste)
     const statusLinha = resultadoTeste
-      ? resultadoTeste.linhas.find(l => l.linha === numLinha)
+      ? resultadoTeste.linhas.find(l => String(l.linha).trim() === numLinha)  // ← ALTERADO: compara string com string
       : null;
 
     container.appendChild(criarCardLinha(numLinha, maquinasOrdenadas, statusLinha));
