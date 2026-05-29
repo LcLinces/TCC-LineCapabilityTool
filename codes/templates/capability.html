@@ -9,7 +9,6 @@
   <div class="cap-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
     <div style="width:40px;"></div>
     <h4 class="mb-0 font-weight-bold">Capabilidade de Linha</h4>
-    <a href="/" class="btn btn-sm btn-outline-light" title="Voltar ao início">
     <a href="/" class="btn-home-clean" title="Voltar ao início">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -282,7 +281,8 @@ async function carregarMaquinas() {
       todasMaquinas
         .map(m => m.linha)
         .filter(l => l !== null && l !== undefined && l !== '')
-    )].sort((a, b) => a - b);
+        .map(l => String(l).trim())   // ← ALTERADO: normaliza pra string
+    )].sort();                         // ← ALTERADO: ordenação alfabética
 
     const select = document.getElementById('select-linha');
     select.innerHTML = '<option value="">— Linha —</option>';
@@ -316,10 +316,10 @@ function aoSelecionarLinha() {
     return;
   }
 
-  linhaAtual = Number(valor);
+  linhaAtual = String(valor).trim();   // ← ALTERADO: armazena como string
 
   maquinasDaLinha = todasMaquinas
-    .filter(m => Number(m.linha) === linhaAtual)
+    .filter(m => String(m.linha).trim() === linhaAtual)   // ← ALTERADO: compara string com string
     .sort((a, b) => (a.posicao || 0) - (b.posicao || 0));
 
   renderizarFaixaMaquinas(maquinasDaLinha);
