@@ -9,7 +9,6 @@
   <div class="cap-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
     <div style="width:40px;"></div>
     <h4 class="mb-0 font-weight-bold">Capabilidade de Linha</h4>
-    <a href="/" class="btn btn-sm btn-outline-light" title="Voltar ao início">
     <a href="/" class="btn-home-clean" title="Voltar ao início">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -201,6 +200,11 @@
     outline: 3px solid #ffc107;
   }
 
+  /* Moldura colorida no card baseada no status do teste */                      /* ← NOVO */
+  .cap-maquina-card.status-ok  { border: 3px solid #28a745; }                    /* ← NOVO */
+  .cap-maquina-card.status-nok { border: 3px solid #dc3545; }                    /* ← NOVO */
+  .cap-maquina-card.status-inc { border: 3px solid #ffc107; }                    /* ← NOVO */
+
   .cap-indicador {
     width: 14px; height: 14px; border-radius: 50%;
     background: #adb5bd; margin: 6px auto 0; border: 2px solid #fff;
@@ -268,6 +272,7 @@ let tagMaquinaSelecion  = null;
 document.addEventListener('DOMContentLoaded', async () => {
   await carregarMaquinas();
   configurarEventos();
+  await restaurarEstadoCapability();                                             // ← NOVO
 });
 
 // ══════════════════════════════════════════════════════
@@ -282,7 +287,8 @@ async function carregarMaquinas() {
       todasMaquinas
         .map(m => m.linha)
         .filter(l => l !== null && l !== undefined && l !== '')
-    )].sort((a, b) => a - b);
+        .map(l => String(l).trim())
+    )].sort();
 
     const select = document.getElementById('select-linha');
     select.innerHTML = '<option value="">— Linha —</option>';
@@ -316,14 +322,16 @@ function aoSelecionarLinha() {
     return;
   }
 
-  linhaAtual = Number(valor);
+  linhaAtual = String(valor).trim();
 
   maquinasDaLinha = todasMaquinas
-    .filter(m => Number(m.linha) === linhaAtual)
+    .filter(m => String(m.linha).trim() === linhaAtual)
     .sort((a, b) => (a.posicao || 0) - (b.posicao || 0));
 
   renderizarFaixaMaquinas(maquinasDaLinha);
   atualizarEnvelope(calcularEnvelopeLocal(maquinasDaLinha));
+
+  salvarEstadoCapability();                                                      // ← NOVO
 }
 
 // ══════════════════════════════════════════════════════
@@ -351,6 +359,8 @@ function renderizarFaixaMaquinas(maquinas) {
        : resultadoMaq.status === 'NOK' ? 'nok' : 'inc')
       : '';
 
+    const classeStatus = classeIndicador ? `status-${classeIndicador}` : '';     // ← NOVO
+
     const wrapper = document.createElement('div');
     wrapper.className = 'd-flex flex-column align-items-center';
 
@@ -358,7 +368,7 @@ function renderizarFaixaMaquinas(maquinas) {
     const ehLarga = (m.tipo || m.nome_maquina || '').toUpperCase().includes('REFLOW');
 
     wrapper.innerHTML = `
-      <div class="cap-maquina-card ${m.tag_maquina === tagMaquinaSelecion ? 'selecionada' : ''} ${ehLarga ? 'larga' : ''}"
+      <div class="cap-maquina-card ${m.tag_maquina === tagMaquinaSelecion ? 'selecionada' : ''} ${ehLarga ? 'larga' : ''} ${classeStatus}"
            data-tag="${m.tag_maquina}"
            title="${m.nome_maquina || m.tag_maquina}">
         ${textoExibido}
@@ -409,6 +419,8 @@ function aoClicarMaquina(tag) {
       });
     }
   }
+
+  salvarEstadoCapability();                                                      // ← NOVO
 }
 
 // ══════════════════════════════════════════════════════
@@ -464,6 +476,8 @@ async function verificarCapabilidade() {
     }
 
     renderizarFaixaMaquinas(maquinasDaLinha);
+
+    salvarEstadoCapability();                                                    // ← NOVO
 
   } catch (e) {
     console.error(e);
@@ -569,6 +583,75 @@ function calcularEnvelopeLocal(maquinas) {
   });
 
   return envelope;
+}
+
+// ══════════════════════════════════════════════════════
+// PERSISTÊNCIA DE ESTADO (sessionStorage)                                       /* ← NOVO BLOCO */
+// ══════════════════════════════════════════════════════
+
+// Salva o estado atual do Capability
+function salvarEstadoCapability() {
+  const estado = {
+    linhaAtual:          linhaAtual,
+    tagMaquinaSelecion:  tagMaquinaSelecion,
+    ultimoResultado:     ultimoResultado,
+    dadosTeste: ultimoResultado ? {
+      largura:     document.getElementById('in-largura').value,
+      comprimento: document.getElementById('in-comprimento').value,
+      altura:      document.getElementById('in-altura').value,
+      peso:        document.getElementById('in-peso').value,
+    } : null,
+  };
+  sessionStorage.setItem('capability_estado', JSON.stringify(estado));
+}
+
+// Restaura o estado salvo (chamado na inicialização)
+async function restaurarEstadoCapability() {
+  const salvo = sessionStorage.getItem('capability_estado');
+  if (!salvo) return;
+
+  try {
+    const estado = JSON.parse(salvo);
+
+    // 1. Restaura linha selecionada
+    if (estado.linhaAtual) {
+      const select = document.getElementById('select-linha');
+      select.value = estado.linhaAtual;
+
+      // Dispara a lógica de seleção (popula a faixa, calcula envelope)
+      aoSelecionarLinha();
+    }
+
+    // 2. Restaura inputs do PCB
+    if (estado.dadosTeste) {
+      document.getElementById('in-largura').value     = estado.dadosTeste.largura;
+      document.getElementById('in-comprimento').value = estado.dadosTeste.comprimento;
+      document.getElementById('in-altura').value      = estado.dadosTeste.altura;
+      document.getElementById('in-peso').value        = estado.dadosTeste.peso;
+    }
+
+    // 3. Restaura resultado do teste (LEDs, cores, indicadores)
+    if (estado.ultimoResultado && estado.dadosTeste) {
+      ultimoResultado = estado.ultimoResultado;
+
+      atualizarEnvelope(ultimoResultado.envelope);
+      aplicarCoresEnvelope(ultimoResultado.envelope, {
+        largura:     parseFloat(estado.dadosTeste.largura),
+        comprimento: parseFloat(estado.dadosTeste.comprimento),
+        altura:      parseFloat(estado.dadosTeste.altura),
+        peso:        parseFloat(estado.dadosTeste.peso),
+      });
+      setLed('led-linha', ultimoResultado.status);
+      renderizarFaixaMaquinas(maquinasDaLinha);
+    }
+
+    // 4. Restaura máquina selecionada (se houver)
+    if (estado.tagMaquinaSelecion) {
+      aoClicarMaquina(estado.tagMaquinaSelecion);
+    }
+  } catch (e) {
+    console.error('Erro ao restaurar estado:', e);
+  }
 }
 
 // ══════════════════════════════════════════════════════

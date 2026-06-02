@@ -210,7 +210,7 @@ function renderizarPainelDireito(maquina) {
       <p class="text-muted mb-3">${maquina.nome_maquina || ''}</p>
       <hr>
 
-      <h6 class="secao-titulo">⚙️ Dados Gerais</h6>
+      <h6 class="secao-titulo"> Dados Gerais</h6>
       <table class="table table-bordered table-sm table-detalhes">
         <tbody>
           <tr><th>TAG</th>        <td>${maquina.tag_maquina  || '—'}</td></tr>
@@ -237,7 +237,7 @@ function renderizarPainelDireito(maquina) {
         </tbody>
       </table>
 
-      <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+      <h6 class="secao-titulo"> Especificações de PCB</h6>
       <table class="table table-bordered table-sm table-detalhes">
         <tbody>
           <tr><th>Peso máx. PCB (kg)</th> <td>${maquina.max_pcb_peso_kg     || '—'}</td></tr>
@@ -249,7 +249,7 @@ function renderizarPainelDireito(maquina) {
         </tbody>
       </table>
 
-      <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
+      <h6 class="secao-titulo"> Dimensões Físicas</h6>
       <table class="table table-bordered table-sm table-detalhes">
         <tbody>
           <tr><th>Peso (kg)</th>        <td>${maquina.peso_maquina || '—'}</td></tr>
@@ -259,7 +259,7 @@ function renderizarPainelDireito(maquina) {
         </tbody>
       </table>
 
-      <h6 class="secao-titulo">📍 Localização</h6>
+      <h6 class="secao-titulo"> Localização</h6>
       <table class="table table-bordered table-sm table-detalhes">
         <tbody>
           <tr><th>Linha</th>   <td>${maquina.linha   || '—'}</td></tr>
@@ -273,10 +273,10 @@ function renderizarPainelDireito(maquina) {
   // ── MODO: NEW ─────────────────────────────
   if (modoAtual === 'new') {
     painel.innerHTML = `
-      <h5 class="font-weight-bold text-dark mb-3">➕ Nova Máquina</h5>
+      <h5 class="font-weight-bold text-dark mb-3"> Nova Máquina</h5>
       <hr>
 
-      <h6 class="secao-titulo">⚙️ Dados Gerais</h6>
+      <h6 class="secao-titulo"> Dados Gerais</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>TAG <span class="text-danger">*</span></label>
@@ -304,7 +304,7 @@ function renderizarPainelDireito(maquina) {
         <textarea id="f-comentario" class="form-control form-control-sm" rows="2"></textarea>
       </div>
 
-      <h6 class="secao-titulo">⚡ Elétrico / Pneumático</h6>
+      <h6 class="secao-titulo"> Elétrico / Pneumático</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Tensão (V)</label>
@@ -348,7 +348,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+      <h6 class="secao-titulo"> Especificações de PCB</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Peso máx. PCB (kg) <span class="text-danger">*</span></label>
@@ -379,7 +379,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
+      <h6 class="secao-titulo"> Dimensões Físicas</h6>
       <div class="form-row">
         <div class="form-group col-md-3">
           <label>Peso (kg)</label>
@@ -399,7 +399,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">📍 Localização</h6>
+      <h6 class="secao-titulo"> Localização</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Linha</label>
@@ -416,7 +416,7 @@ function renderizarPainelDireito(maquina) {
       <div id="form-feedback" class="mb-3"></div>
 
       <button id="btn-salvar" class="btn btn-success btn-block font-weight-bold">
-        💾 Cadastrar Máquina
+         Cadastrar Máquina
       </button>
     `;
 
@@ -428,10 +428,10 @@ function renderizarPainelDireito(maquina) {
   // ── MODO: EDIT ────────────────────────────
   if (modoAtual === 'edit') {
     painel.innerHTML = `
-      <h5 class="font-weight-bold text-dark mb-3">✏️ Editando: ${maquina.tag_maquina}</h5>
+      <h5 class="font-weight-bold text-dark mb-3"> Editando: ${maquina.tag_maquina}</h5>
       <hr>
 
-      <h6 class="secao-titulo">⚙️ Dados Gerais</h6>
+      <h6 class="secao-titulo"> Dados Gerais</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>TAG</label>
@@ -465,7 +465,7 @@ function renderizarPainelDireito(maquina) {
                   rows="2">${maquina.comentario || ''}</textarea>
       </div>
 
-      <h6 class="secao-titulo">⚡ Elétrico / Pneumático</h6>
+      <h6 class="secao-titulo"> Elétrico / Pneumático</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Tensão (V)</label>
@@ -513,7 +513,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">🖥️ Especificações de PCB</h6>
+      <h6 class="secao-titulo"> Especificações de PCB</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Peso máx. PCB (kg) <span class="text-danger">*</span></label>
@@ -550,7 +550,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">📐 Dimensões Físicas</h6>
+      <h6 class="secao-titulo"> Dimensões Físicas</h6>
       <div class="form-row">
         <div class="form-group col-md-3">
           <label>Peso (kg)</label>
@@ -574,7 +574,7 @@ function renderizarPainelDireito(maquina) {
         </div>
       </div>
 
-      <h6 class="secao-titulo">📍 Localização</h6>
+      <h6 class="secao-titulo"> Localização</h6>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label>Linha</label>
@@ -592,7 +592,7 @@ function renderizarPainelDireito(maquina) {
       <div id="form-feedback" class="mb-3"></div>
 
       <button id="btn-salvar-edicao" class="btn btn-warning btn-block font-weight-bold">
-        💾 Salvar Alterações
+        Salvar Alterações
       </button>
     `;
 
@@ -605,7 +605,7 @@ function renderizarPainelDireito(maquina) {
   if (modoAtual === 'delete') {
     painel.innerHTML = `
       <div class="text-center mt-5">
-        <h5 class="font-weight-bold text-danger mb-1">🗑️ Excluir Máquina</h5>
+        <h5 class="font-weight-bold text-danger mb-1"> Excluir Máquina</h5>
         <p class="text-muted mb-4">Esta ação não pode ser desfeita.</p>
 
         <div class="card border-danger mx-auto" style="max-width: 400px;">
@@ -624,7 +624,7 @@ function renderizarPainelDireito(maquina) {
                 ✖ Cancelar
               </button>
               <button id="btn-confirmar-delete" class="btn btn-danger font-weight-bold">
-                🗑️ Confirmar Exclusão
+                 Confirmar Exclusão
               </button>
             </div>
           </div>
@@ -685,7 +685,7 @@ async function salvarNovaMaquina() {
       !dados.max_pcb_comp_mm || !dados.max_pcb_larg_mm || !dados.max_height_limit_mm) {
     feedback.innerHTML = `
       <div class="alert alert-danger py-2">
-        ⚠️ Preencha todos os campos obrigatórios:
+         Preencha todos os campos obrigatórios:
         <strong>TAG, Nome, Tipo e todas as Especificações de PCB</strong>.
       </div>`;
     return;
@@ -710,17 +710,17 @@ async function salvarNovaMaquina() {
 
       const aviso = document.createElement('div');
       aviso.className = 'alert alert-success py-2 mx-3 mt-2';
-      aviso.textContent = `✅ ${resultado.mensagem}`;
+      aviso.textContent = ` ${resultado.mensagem}`;
       document.getElementById('painel-direito').prepend(aviso);
       setTimeout(() => aviso.remove(), 3000);
 
     } else {
       feedback.innerHTML = `
-        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+        <div class="alert alert-danger py-2"> ${resultado.mensagem}</div>`;
     }
   } catch (e) {
     feedback.innerHTML = `
-      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+      <div class="alert alert-danger py-2"> Erro de comunicação com o servidor.</div>`;
   }
 }
 
@@ -761,7 +761,7 @@ async function salvarEdicao(tag) {
       !dados.max_pcb_comp_mm || !dados.max_pcb_larg_mm || !dados.max_height_limit_mm) {
     feedback.innerHTML = `
       <div class="alert alert-danger py-2">
-        ⚠️ Preencha todos os campos obrigatórios:
+         Preencha todos os campos obrigatórios:
         <strong>Nome, Tipo e todas as Especificações de PCB</strong>.
       </div>`;
     return;
@@ -786,17 +786,17 @@ async function salvarEdicao(tag) {
 
       const aviso = document.createElement('div');
       aviso.className = 'alert alert-success py-2 mx-3 mt-2';
-      aviso.textContent = `✅ ${resultado.mensagem}`;
+      aviso.textContent = ` ${resultado.mensagem}`;
       document.getElementById('painel-direito').prepend(aviso);
       setTimeout(() => aviso.remove(), 3000);
 
     } else {
       feedback.innerHTML = `
-        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+        <div class="alert alert-danger py-2"> ${resultado.mensagem}</div>`;
     }
   } catch (e) {
     feedback.innerHTML = `
-      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+      <div class="alert alert-danger py-2"> Erro de comunicação com o servidor.</div>`;
   }
 }
 
@@ -823,18 +823,18 @@ async function confirmarDelete(tag) {
 
       document.getElementById('painel-direito').innerHTML = `
         <div class="alert alert-success mt-4 text-center">
-          ✅ ${resultado.mensagem}
+           ${resultado.mensagem}
         </div>`;
 
       await carregarMaquinas();
 
     } else {
       feedback.innerHTML = `
-        <div class="alert alert-danger py-2">❌ ${resultado.mensagem}</div>`;
+        <div class="alert alert-danger py-2"> ${resultado.mensagem}</div>`;
     }
   } catch (e) {
     feedback.innerHTML = `
-      <div class="alert alert-danger py-2">❌ Erro de comunicação com o servidor.</div>`;
+      <div class="alert alert-danger py-2"> Erro de comunicação com o servidor.</div>`;
   }
 }
 

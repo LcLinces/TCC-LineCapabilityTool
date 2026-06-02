@@ -164,6 +164,11 @@
     z-index: 5;
   }
 
+  /* Moldura colorida no card baseada no status do teste */            /* ← NOVO */
+  .lv-maquina-card.status-ok  { border: 3px solid #28a745; }            /* ← NOVO */
+  .lv-maquina-card.status-nok { border: 3px solid #dc3545; }            /* ← NOVO */
+  .lv-maquina-card.status-inc { border: 3px solid #ffc107; }            /* ← NOVO */
+
   /* Indicador OK/NOK abaixo do card */
   .lv-indicador {
     width: 12px;
@@ -176,6 +181,10 @@
   .lv-indicador.ok  { background: #28a745; }
   .lv-indicador.nok { background: #dc3545; }
   .lv-indicador.inc { background: #ffc107; }
+
+  /* Cor do texto dos valores no modal */
+  .valor-ok  { color: #28a745 !important; }
+  .valor-nok { color: #dc3545 !important; }
 </style>
 
 {% endblock %}
@@ -276,13 +285,13 @@ function renderizarLinhas() {
   const linhas = {};
   todasMaquinas.forEach(m => {
     if (m.linha === null || m.linha === undefined || m.linha === '') return;
-    const numLinha = Number(m.linha);
+    const numLinha = String(m.linha).trim();
     if (!linhas[numLinha]) linhas[numLinha] = [];
     linhas[numLinha].push(m);
   });
 
-  // Pega os números de linha em ordem crescente
-  const numerosLinhas = Object.keys(linhas).map(Number).sort((a, b) => a - b);
+  // Pega os nomes de linha em ordem alfabética
+  const numerosLinhas = Object.keys(linhas).sort();
 
   if (numerosLinhas.length === 0) {
     container.innerHTML = `<p class="text-muted text-center mt-5">Nenhuma linha cadastrada.</p>`;
@@ -296,7 +305,7 @@ function renderizarLinhas() {
 
     // Busca o status dessa linha no resultado (se houver teste)
     const statusLinha = resultadoTeste
-      ? resultadoTeste.linhas.find(l => l.linha === numLinha)
+      ? resultadoTeste.linhas.find(l => String(l.linha).trim() === numLinha)
       : null;
 
     container.appendChild(criarCardLinha(numLinha, maquinasOrdenadas, statusLinha));
@@ -341,12 +350,14 @@ function criarCardLinha(numLinha, maquinas, statusLinha) {
        : statusMaq.status === 'NOK' ? 'nok' : 'inc')
       : '';
 
+    const classeStatus = classeIndicador ? `status-${classeIndicador}` : '';    // ← NOVO
+
     const textoExibido = m.tipo || m.nome_maquina || m.tag_maquina;
     const ehLarga = (m.tipo || m.nome_maquina || '').toUpperCase().includes('REFLOW');
 
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
-      <div class="lv-maquina-card ${ehLarga ? 'larga' : ''}"
+      <div class="lv-maquina-card ${ehLarga ? 'larga' : ''} ${classeStatus}"
            data-tag="${m.tag_maquina}"
            title="${m.nome_maquina || m.tag_maquina}">
         ${textoExibido}
