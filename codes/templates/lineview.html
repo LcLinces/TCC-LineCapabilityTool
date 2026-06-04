@@ -9,7 +9,14 @@
   <div class="lv-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
     <a href="/capability" class="btn btn-sm btn-outline-light" title="Voltar para Capabilidade">←</a>
     <h4 class="mb-0 font-weight-bold">Line View — Visão Geral das Linhas</h4>
-    <a href="/" class="btn btn-sm btn-outline-light" title="Voltar ao início">🏠</a>
+    <a href="/" class="btn-home-clean" title="Voltar ao início">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5"></path>
+        <path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"></path>
+        <path d="M9 21v-6h6v6"></path>
+      </svg>
+    </a>
   </div>
 
   <!-- ══════════════════════════════════════════ -->
@@ -185,6 +192,26 @@
   /* Cor do texto dos valores no modal */
   .valor-ok  { color: #28a745 !important; }
   .valor-nok { color: #dc3545 !important; }
+
+  /* Botão home clean (contorno) */
+  .btn-home-clean {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    color: #fff;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+  }
+  .btn-home-clean:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    text-decoration: none;
+  }
 </style>
 
 {% endblock %}

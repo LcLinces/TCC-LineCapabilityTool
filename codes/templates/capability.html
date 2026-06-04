@@ -3,9 +3,6 @@
 
 <div class="cap-wrapper">
 
-  <!-- ══════════════════════════════════════════ -->
-  <!-- CABEÇALHO                                   -->
-  <!-- ══════════════════════════════════════════ -->
   <div class="cap-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
     <div style="width:40px;"></div>
     <h4 class="mb-0 font-weight-bold">Capabilidade de Linha</h4>
@@ -19,13 +16,9 @@
     </a>
   </div>
 
-  <!-- ══════════════════════════════════════════ -->
-  <!-- ÁREA SUPERIOR                               -->
-  <!-- ══════════════════════════════════════════ -->
   <div class="cap-area-superior">
     <div class="row h-100 m-0">
 
-      <!-- COLUNA ESQUERDA -->
       <div class="col-md-6 d-flex flex-column p-2">
 
         <div class="card shadow-sm">
@@ -66,15 +59,13 @@
         </button>
 
         <button id="btn-lineview" class="btn btn-dark btn-block font-weight-bold mt-2 py-2">
-          📊 Ver Todas as Linhas (Line View)
+          Ver Todas as Linhas (Line View)
         </button>
 
       </div>
 
-      <!-- COLUNA DIREITA -->
       <div class="col-md-6 d-flex flex-column p-2">
 
-        <!-- Card Status - Linha -->
         <div class="card shadow-sm mb-2">
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
             <span class="font-weight-bold">
@@ -97,7 +88,6 @@
           </div>
         </div>
 
-        <!-- Card Status - Máquina -->
         <div class="card shadow-sm border-warning flex-grow-1">
           <div class="card-header bg-dark text-white py-2">
             <span class="font-weight-bold">
@@ -124,9 +114,6 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════ -->
-  <!-- FAIXA DE MÁQUINAS                           -->
-  <!-- ══════════════════════════════════════════ -->
   <div class="cap-faixa-wrapper">
     <div class="card shadow-sm h-100 mx-2 mb-2">
       <div class="card-header bg-dark text-white font-weight-bold py-1 px-3" style="font-size:.85rem;">
@@ -200,10 +187,10 @@
     outline: 3px solid #ffc107;
   }
 
-  /* Moldura colorida no card baseada no status do teste */                      /* ← NOVO */
-  .cap-maquina-card.status-ok  { border: 3px solid #28a745; }                    /* ← NOVO */
-  .cap-maquina-card.status-nok { border: 3px solid #dc3545; }                    /* ← NOVO */
-  .cap-maquina-card.status-inc { border: 3px solid #ffc107; }                    /* ← NOVO */
+  /* Moldura colorida no card baseada no status do teste */
+  .cap-maquina-card.status-ok  { border: 3px solid #28a745; }
+  .cap-maquina-card.status-nok { border: 3px solid #dc3545; }
+  .cap-maquina-card.status-inc { border: 3px solid #ffc107; }
 
   .cap-indicador {
     width: 14px; height: 14px; border-radius: 50%;
@@ -213,7 +200,7 @@
   .cap-indicador.nok { background: #dc3545; }
   .cap-indicador.inc { background: #ffc107; }
 
-  /* LED de status (ao lado do título) */
+  /* LED de status (ao lado do titulo) */
   .cap-led {
     display: inline-block;
     width: 14px;
@@ -227,27 +214,27 @@
   .cap-led.ok  { background: #28a745; }
   .cap-led.nok { background: #dc3545; }
 
-  /* Cor do texto dos valores dos parâmetros */
+  /* Cor do texto dos valores dos parametros */
   .valor-ok  { color: #28a745 !important; }
   .valor-nok { color: #dc3545 !important; }
 
   .btn-home-clean {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 2px solid currentColor;
-  border-radius: 8px;
-  color: #fff;
-  background: transparent;
-  transition: background 0.15s, color 0.15s;
-  text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    color: #fff;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
   }
   .btn-home-clean:hover {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  text-decoration: none;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    text-decoration: none;
   }
 
 </style>
@@ -257,27 +244,27 @@
 {% block scripts %}
 <script>
 
-// ══════════════════════════════════════════════════════
+// ======================================================
 // ESTADO GLOBAL
-// ══════════════════════════════════════════════════════
+// ======================================================
 let todasMaquinas       = [];
 let linhaAtual          = null;
 let maquinasDaLinha     = [];
 let ultimoResultado     = null;
 let tagMaquinaSelecion  = null;
 
-// ══════════════════════════════════════════════════════
-// INICIALIZAÇÃO
-// ══════════════════════════════════════════════════════
+// ======================================================
+// INICIALIZACAO
+// ======================================================
 document.addEventListener('DOMContentLoaded', async () => {
   await carregarMaquinas();
   configurarEventos();
-  await restaurarEstadoCapability();                                             // ← NOVO
+  await restaurarEstadoCapability();                                             // <- NOVO
 });
 
-// ══════════════════════════════════════════════════════
-// CARREGAR MÁQUINAS E POPULAR DROPDOWN
-// ══════════════════════════════════════════════════════
+// ======================================================
+// CARREGAR MAQUINAS E POPULAR DROPDOWN
+// ======================================================
 async function carregarMaquinas() {
   try {
     const resp = await fetch('/api/maquinas');
@@ -299,13 +286,13 @@ async function carregarMaquinas() {
       select.appendChild(opt);
     });
   } catch (e) {
-    console.error('Erro ao carregar máquinas:', e);
+    console.error('Erro ao carregar maquinas:', e);
   }
 }
 
-// ══════════════════════════════════════════════════════
+// ======================================================
 // AO SELECIONAR UMA LINHA
-// ══════════════════════════════════════════════════════
+// ======================================================
 function aoSelecionarLinha() {
   const valor = document.getElementById('select-linha').value;
 
@@ -331,12 +318,12 @@ function aoSelecionarLinha() {
   renderizarFaixaMaquinas(maquinasDaLinha);
   atualizarEnvelope(calcularEnvelopeLocal(maquinasDaLinha));
 
-  salvarEstadoCapability();                                                      // ← NOVO
+  salvarEstadoCapability();                                                      // <- NOVO
 }
 
-// ══════════════════════════════════════════════════════
-// RENDERIZAR A FAIXA DE MÁQUINAS
-// ══════════════════════════════════════════════════════
+// ======================================================
+// RENDERIZAR A FAIXA DE MAQUINAS
+// ======================================================
 function renderizarFaixaMaquinas(maquinas) {
   const container = document.getElementById('cap-linha-maquinas');
   container.innerHTML = '';
@@ -344,7 +331,7 @@ function renderizarFaixaMaquinas(maquinas) {
   if (maquinas.length === 0) {
     container.innerHTML = `
       <p class="text-muted text-center w-100 mb-0">
-        Selecione uma linha acima para visualizar suas máquinas.
+        Selecione uma linha acima para visualizar suas maquinas.
       </p>`;
     return;
   }
@@ -359,7 +346,7 @@ function renderizarFaixaMaquinas(maquinas) {
        : resultadoMaq.status === 'NOK' ? 'nok' : 'inc')
       : '';
 
-    const classeStatus = classeIndicador ? `status-${classeIndicador}` : '';     // ← NOVO
+    const classeStatus = classeIndicador ? `status-${classeIndicador}` : '';     // <- NOVO
 
     const wrapper = document.createElement('div');
     wrapper.className = 'd-flex flex-column align-items-center';
@@ -384,9 +371,9 @@ function renderizarFaixaMaquinas(maquinas) {
   });
 }
 
-// ══════════════════════════════════════════════════════
-// AO CLICAR NUMA MÁQUINA
-// ══════════════════════════════════════════════════════
+// ======================================================
+// AO CLICAR NUMA MAQUINA
+// ======================================================
 function aoClicarMaquina(tag) {
   tagMaquinaSelecion = tag;
   renderizarFaixaMaquinas(maquinasDaLinha);
@@ -420,19 +407,19 @@ function aoClicarMaquina(tag) {
     }
   }
 
-  salvarEstadoCapability();                                                      // ← NOVO
+  salvarEstadoCapability();                                                      // <- NOVO
 }
 
-// ══════════════════════════════════════════════════════
-// BOTÃO VERIFICAR CAPABILIDADE
-// ══════════════════════════════════════════════════════
+// ======================================================
+// BOTAO VERIFICAR CAPABILIDADE
+// ======================================================
 async function verificarCapabilidade() {
   const feedback = document.getElementById('cap-form-feedback');
   feedback.innerHTML = '';
   limparStatusVisual();
 
   if (!linhaAtual) {
-    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">⚠️ Selecione uma linha antes de testar.</div>`;
+    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">Selecione uma linha antes de testar.</div>`;
     return;
   }
 
@@ -445,7 +432,7 @@ async function verificarCapabilidade() {
   };
 
   if (!dados.largura || !dados.comprimento || !dados.altura || !dados.peso) {
-    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">⚠️ Preencha largura, comprimento, altura e peso.</div>`;
+    feedback.innerHTML = `<div class="alert alert-warning py-2 mb-0">Preencha largura, comprimento, altura e peso.</div>`;
     return;
   }
 
@@ -458,7 +445,7 @@ async function verificarCapabilidade() {
     const resultado = await resp.json();
 
     if (!resultado.sucesso) {
-      feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">❌ ${resultado.mensagem}</div>`;
+      feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">${resultado.mensagem}</div>`;
       return;
     }
 
@@ -477,17 +464,17 @@ async function verificarCapabilidade() {
 
     renderizarFaixaMaquinas(maquinasDaLinha);
 
-    salvarEstadoCapability();                                                    // ← NOVO
+    salvarEstadoCapability();                                                    // <- NOVO
 
   } catch (e) {
     console.error(e);
-    feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">❌ Erro de comunicação com o servidor.</div>`;
+    feedback.innerHTML = `<div class="alert alert-danger py-2 mb-0">Erro de comunicação com o servidor.</div>`;
   }
 }
 
-// ══════════════════════════════════════════════════════
+// ======================================================
 // HELPERS
-// ══════════════════════════════════════════════════════
+// ======================================================
 function fmt(valor, unidade) {
   if (valor === null || valor === undefined || valor === '') return '—';
   return `${valor} ${unidade}`;
@@ -585,9 +572,9 @@ function calcularEnvelopeLocal(maquinas) {
   return envelope;
 }
 
-// ══════════════════════════════════════════════════════
-// PERSISTÊNCIA DE ESTADO (sessionStorage)                                       /* ← NOVO BLOCO */
-// ══════════════════════════════════════════════════════
+// ======================================================
+// PERSISTENCIA DE ESTADO (sessionStorage)               /* <- NOVO BLOCO */
+// ======================================================
 
 // Salva o estado atual do Capability
 function salvarEstadoCapability() {
@@ -605,7 +592,7 @@ function salvarEstadoCapability() {
   sessionStorage.setItem('capability_estado', JSON.stringify(estado));
 }
 
-// Restaura o estado salvo (chamado na inicialização)
+// Restaura o estado salvo (chamado na inicializacao)
 async function restaurarEstadoCapability() {
   const salvo = sessionStorage.getItem('capability_estado');
   if (!salvo) return;
@@ -618,7 +605,7 @@ async function restaurarEstadoCapability() {
       const select = document.getElementById('select-linha');
       select.value = estado.linhaAtual;
 
-      // Dispara a lógica de seleção (popula a faixa, calcula envelope)
+      // Dispara a logica de selecao (popula a faixa, calcula envelope)
       aoSelecionarLinha();
     }
 
@@ -645,7 +632,7 @@ async function restaurarEstadoCapability() {
       renderizarFaixaMaquinas(maquinasDaLinha);
     }
 
-    // 4. Restaura máquina selecionada (se houver)
+    // 4. Restaura maquina selecionada (se houver)
     if (estado.tagMaquinaSelecion) {
       aoClicarMaquina(estado.tagMaquinaSelecion);
     }
@@ -654,9 +641,9 @@ async function restaurarEstadoCapability() {
   }
 }
 
-// ══════════════════════════════════════════════════════
+// ======================================================
 // EVENTOS
-// ══════════════════════════════════════════════════════
+// ======================================================
 function configurarEventos() {
   document.getElementById('select-linha').addEventListener('change', aoSelecionarLinha);
   document.getElementById('btn-check').addEventListener('click', verificarCapabilidade);
